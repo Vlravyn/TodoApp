@@ -1,0 +1,219 @@
+﻿<Page
+    x:Class="TodoApp.Views.TaskDetailPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:converters="clr-namespace:TodoApp.Converters"
+    xmlns:customcontrols="clr-namespace:TodoApp.CustomControls"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:dataModels="clr-namespace:TodoApp.Core.DataModels;assembly=TodoApp.Core"
+    xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+    xmlns:local="clr-namespace:TodoApp.Views"
+    xmlns:main="clr-namespace:TodoApp"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+    xmlns:viewModels="clr-namespace:TodoApp.ViewModels"
+    Title="TaskDetailPage"
+    Width="300"
+    d:DataContext="{d:DesignInstance Type=viewModels:TaskDetailViewModel,
+                                     IsDesignTimeCreatable=True}"
+    d:DesignHeight="800"
+    d:DesignWidth="450"
+    Background="{ui:ThemeResource ControlFillColorSecondaryBrush}"
+    mc:Ignorable="d">
+    <i:Interaction.Triggers>
+        <i:DataTrigger Binding="{Binding Task, Converter={converters:HasValueConverter}}" Value="False">
+            <i:ChangePropertyAction PropertyName="Visibility" Value="{x:Static Visibility.Collapsed}" />
+        </i:DataTrigger>
+        <i:DataTrigger Binding="{Binding Task, Converter={converters:HasValueConverter}}" Value="True">
+            <i:ChangePropertyAction PropertyName="Visibility" Value="{x:Static Visibility.Visible}" />
+        </i:DataTrigger>
+    </i:Interaction.Triggers>
+    <Page.Triggers />
+    <StackPanel Orientation="Vertical">
+        <ui:Button
+            Margin="2"
+            HorizontalAlignment="Right"
+            Background="Transparent"
+            BorderThickness="0"
+            Command="{Binding CloseCommand}"
+            Content="Close" />
+
+        <!--  Title and steps  -->
+        <Border x:Name="titleBorder" Background="{ui:ThemeResource ControlFillColorTertiaryBrush}" CornerRadius="2">
+            <StackPanel Orientation="Vertical">
+                <Grid DataContext="{Binding Task}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="auto" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="auto" />
+                    </Grid.ColumnDefinitions>
+                    <CheckBox Grid.Column="0" IsChecked="{Binding IsCompleted}" />
+                    <TextBox Grid.Column="1" FontSize="24">
+                        <TextBox.Text>
+                            <Binding
+                                    Mode="TwoWay"
+                                    Path="Title"
+                                    ValidatesOnDataErrors="True"
+                                    ValidatesOnExceptions="True"
+                                    ValidatesOnNotifyDataErrors="True">
+                                <Binding.ValidationRules>
+                                    <main:StringNotNullEmptyOrWhitespaceValidationRule ValidatesOnTargetUpdated="True" />
+                                </Binding.ValidationRules>
+                            </Binding>
+                        </TextBox.Text>
+                    </TextBox>
+                    <CheckBox
+                            Grid.Column="2"
+                            IsChecked="{Binding IsImportant}"
+                            Style="{StaticResource StarIconCheckBox}" />
+                </Grid>
+
+                <ui:VirtualizingItemsControl x:Name="stepsControl" ItemsSource="{Binding Task.Steps}">
+                    <ui:VirtualizingItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel Orientation="Vertical" />
+                        </ItemsPanelTemplate>
+                    </ui:VirtualizingItemsControl.ItemsPanel>
+                    <ui:VirtualizingItemsControl.ItemTemplate>
+                        <DataTemplate DataType="{x:Type dataModels:Step}">
+                            <Grid x:Name="grid" Margin="2">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="auto" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="auto" />
+                                </Grid.ColumnDefinitions>
+
+                                <CheckBox
+                                        x:Name="completedCheckBox"
+                                        Grid.Column="0"
+                                        Margin="2"
+                                        HorizontalAlignment="Center"
+                                        VerticalAlignment="Center"
+                                        IsChecked="{Binding IsCompleted}" />
+                                <TextBox Grid.Column="1" FontSize="14">
+                                    <TextBox.Text>
+                                        <Binding
+                                                Mode="TwoWay"
+                                                Path="Title"
+                                                ValidatesOnDataErrors="True"
+                                                ValidatesOnExceptions="True"
+                                                ValidatesOnNotifyDataErrors="True">
+                                            <Binding.ValidationRules>
+                                                <main:StringNotNullEmptyOrWhitespaceValidationRule ValidatesOnTargetUpdated="True" />
+                                            </Binding.ValidationRules>
+                                        </Binding>
+                                    </TextBox.Text>
+                                </TextBox>
+                                <ui:Button
+                                        Grid.Column="2"
+                                        VerticalAlignment="Stretch"
+                                        Background="Transparent"
+                                        BorderThickness="0"
+                                        FontSize="12"
+                                        Icon="{ui:SymbolIcon Symbol=MoreVertical16}">
+                                    <i:Interaction.Triggers>
+                                        <i:EventTrigger EventName="Click">
+                                            <i:ChangePropertyAction
+                                                    PropertyName="IsOpen"
+                                                    TargetName="stepContextMenu"
+                                                    Value="True" />
+                                        </i:EventTrigger>
+                                    </i:Interaction.Triggers>
+                                </ui:Button>
+                                <Grid.ContextMenu>
+                                    <ContextMenu x:Name="stepContextMenu" Tag="{x:Reference Name=grid}">
+                                        <MenuItem
+                                                d:DataContext="{d:DesignInstance Type=dataModels:Step,
+                                                                                 IsDesignTimeCreatable=True}"
+                                                Command="{Binding Source={x:Reference Name=stepsControl}, Path=DataContext.(viewModels:TaskDetailViewModel.ToggleCompletedCommand)}"
+                                                CommandParameter="{Binding}"
+                                                DataContext="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu, Mode=FindAncestor}, Path=Tag.DataContext}"
+                                                Header="Mark as completed">
+                                            <i:Interaction.Triggers>
+                                                <i:DataTrigger Binding="{Binding IsCompleted}" Value="True">
+                                                    <i:ChangePropertyAction PropertyName="Header" Value="Mark as not completed" />
+                                                </i:DataTrigger>
+                                                <i:DataTrigger Binding="{Binding IsCompleted}" Value="False">
+                                                    <i:ChangePropertyAction PropertyName="Header" Value="Mark as completed" />
+                                                </i:DataTrigger>
+                                            </i:Interaction.Triggers>
+                                        </MenuItem>
+                                        <MenuItem
+                                                Command="{Binding Source={x:Reference Name=stepsControl}, Path=DataContext.(viewModels:TaskDetailViewModel.DeleteStepCommand)}"
+                                                CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu, Mode=FindAncestor}, Path=Tag.DataContext}"
+                                                Header="Delete step" />
+                                        <MenuItem
+                                                Command="{Binding Source={x:Reference Name=stepsControl}, Path=DataContext.(viewModels:TaskDetailViewModel.PromoteToTaskCommand)}"
+                                                CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu, Mode=FindAncestor}, Path=Tag.DataContext}"
+                                                Header="Promote to task" />
+                                    </ContextMenu>
+                                </Grid.ContextMenu>
+                            </Grid>
+                        </DataTemplate>
+                    </ui:VirtualizingItemsControl.ItemTemplate>
+                </ui:VirtualizingItemsControl>
+
+                <Button
+                        Margin="0,5,0,0"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        Command="{Binding AddNewStepCommand}"
+                        Content="Add new Step" />
+            </StackPanel>
+        </Border>
+
+        <!--  Remind me and Due Date  -->
+        <Border Margin="0,5,0,5" Background="{ui:ThemeResource ControlFillColorTertiaryBrush}">
+            <StackPanel Orientation="Vertical">
+                <customcontrols:DateTimePicker
+                    Padding="5"
+                    HorizontalContentAlignment="Left"
+                    CornerRadius="5"
+                    SelectedDateTime="{Binding Task.RemindUser, Mode=TwoWay}">
+                    <customcontrols:DateTimePicker.Content>
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*" />
+                                <RowDefinition Height="auto" />
+                            </Grid.RowDefinitions>
+
+                            <TextBlock
+                                Grid.Row="0"
+                                Text="{Binding RelativeSource={RelativeSource AncestorType=customcontrols:DateTimePicker, Mode=FindAncestor}, Path=SelectedDateTime}"
+                                Visibility="{Binding RelativeSource={RelativeSource AncestorType=customcontrols:DateTimePicker, Mode=FindAncestor}, Path=IsDateTimeExplicitlySet, Converter={converters:BooleanToVisibilityConverter}}" />
+                            <TextBlock Grid.Row="1" Text="Remind Me" />
+                        </Grid>
+                    </customcontrols:DateTimePicker.Content>
+                </customcontrols:DateTimePicker>
+                <customcontrols:DateTimePicker
+                    Padding="5"
+                    HorizontalContentAlignment="Left"
+                    CornerRadius="5"
+                    SelectedDateTime="{Binding Task.DueDate, Mode=TwoWay}">
+                    <customcontrols:DateTimePicker.Content>
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*" />
+                                <RowDefinition Height="auto" />
+                            </Grid.RowDefinitions>
+
+                            <TextBlock
+                                Grid.Row="0"
+                                Text="{Binding RelativeSource={RelativeSource AncestorType=customcontrols:DateTimePicker, Mode=FindAncestor}, Path=SelectedDateTime}"
+                                Visibility="{Binding RelativeSource={RelativeSource AncestorType=customcontrols:DateTimePicker, Mode=FindAncestor}, Path=IsDateTimeExplicitlySet, Converter={converters:BooleanToVisibilityConverter}}" />
+                            <TextBlock Grid.Row="1" Text="Add due date" />
+                        </Grid>
+                    </customcontrols:DateTimePicker.Content>
+                </customcontrols:DateTimePicker>
+            </StackPanel>
+        </Border>
+
+
+        <!--  Description  -->
+        <customcontrols:CustomTextBox
+            MinHeight="100"
+            Margin="0,5,0,5"
+            PlaceholderText="Add Description...."
+            Text="{Binding Task.Description, Mode=TwoWay}"/>
+    </StackPanel>
+</Page>

@@ -1,0 +1,17 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <Color x:Key="SuccessGreen">#53A653</Color>
+    <Color x:Key="SuccessGreenLight">#4BB543</Color>
+    <Color x:Key="SuccessGreenDark">#2E5C2E</Color>
+
+    <Color x:Key="DangerRed">#FF0000</Color>
+    <Color x:Key="DangerRedLight">#DF1B1B</Color>
+    <Color x:Key="DangerRedDark">#BA3030</Color>
+
+    <SolidColorBrush x:Key="SuccessGreenBrush" Color="{StaticResource SuccessGreen}" />
+    <SolidColorBrush x:Key="SuccessGreenLightBrush" Color="{StaticResource SuccessGreenLight}" />
+    <SolidColorBrush x:Key="SuccessGreenDarkBrush" Color="{StaticResource SuccessGreenDark}" />
+    <SolidColorBrush x:Key="DangerRedBrush" Color="{StaticResource DangerRed}" />
+    <SolidColorBrush x:Key="DangerRedLightBrush" Color="{StaticResource DangerRedLight}" />
+    <SolidColorBrush x:Key="DangerRedDarkBrush" Color="{StaticResource DangerRedDark}" />
+</ResourceDictionary>
