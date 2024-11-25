@@ -12,12 +12,13 @@
     xmlns:valueConverters="clr-namespace:TodoApp.Converters"
     xmlns:viewModels="clr-namespace:TodoApp.ViewModels"
     Title="CompletedTasksPage"
+    xmlns:System="clr-namespace:System;assembly=mscorlib"
     d:DataContext="{d:DesignInstance Type=viewModels:CompletedTasksViewModel,
                                      IsDesignTimeCreatable=True}"
     d:DesignHeight="450"
     d:DesignWidth="800"
     mc:Ignorable="d">
-    <StackPanel>
+    <Grid>
         <ItemsControl x:Name="taskCollection" ItemsSource="{Binding CompletedTasks}">
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
@@ -76,7 +77,7 @@
                                         HorizontalAlignment="Left"
                                         FontSize="12"
                                         TextAlignment="Left"
-                                        Visibility="{Binding Steps, Converter={valueConverters:StepsToVisibilityConverter}, UpdateSourceTrigger=Explicit}">
+                                        Visibility="{Binding Steps, Converter={valueConverters:CollectionToVisibilityConverter}, UpdateSourceTrigger=Explicit}">
                                         <Run Text="{Binding Path=Steps, Converter={valueConverters:StepsToCompletedCountConverter}}" />
                                         <Run Text="of" />
                                         <Run Text="{Binding Path=Steps.Count, Mode=OneWay}" />
@@ -112,5 +113,12 @@
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
         </ItemsControl>
-    </StackPanel>
+        <TextBlock
+            Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+            Visibility="{Binding CompletedTasks, Converter={valueConverters:CollectionToVisibilityConverter}, ConverterParameter={StaticResource True}}"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Center"
+            FontSize="18"
+            Text="There are not any completed tasks." />
+    </Grid>
 </Page>

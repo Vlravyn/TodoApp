@@ -7,8 +7,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TodoApp", "TodoApp\TodoApp.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TodoApp.Core", "TodoApp.Core\TodoApp.Core.csproj", "{A442193D-D236-4FE6-A7A5-30ED82C94F40}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TodoApp.Reminder", "TodoApp.ReminderService\TodoApp.Reminder.csproj", "{E7E43322-BC55-41A3-9473-D91887DF0013}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -43,18 +41,6 @@ Global
 		{A442193D-D236-4FE6-A7A5-30ED82C94F40}.Release|x64.Build.0 = Release|Any CPU
 		{A442193D-D236-4FE6-A7A5-30ED82C94F40}.Release|x86.ActiveCfg = Release|Any CPU
 		{A442193D-D236-4FE6-A7A5-30ED82C94F40}.Release|x86.Build.0 = Release|Any CPU
-		{E7E43322-BC55-41A3-9473-D91887DF0013}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E7E43322-BC55-41A3-9473-D91887DF0013}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E7E43322-BC55-41A3-9473-D91887DF0013}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{E7E43322-BC55-41A3-9473-D91887DF0013}.Debug|x64.Build.0 = Debug|Any CPU
-		{E7E43322-BC55-41A3-9473-D91887DF0013}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{E7E43322-BC55-41A3-9473-D91887DF0013}.Debug|x86.Build.0 = Debug|Any CPU
-		{E7E43322-BC55-41A3-9473-D91887DF0013}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E7E43322-BC55-41A3-9473-D91887DF0013}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E7E43322-BC55-41A3-9473-D91887DF0013}.Release|x64.ActiveCfg = Release|Any CPU
-		{E7E43322-BC55-41A3-9473-D91887DF0013}.Release|x64.Build.0 = Release|Any CPU
-		{E7E43322-BC55-41A3-9473-D91887DF0013}.Release|x86.ActiveCfg = Release|Any CPU
-		{E7E43322-BC55-41A3-9473-D91887DF0013}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

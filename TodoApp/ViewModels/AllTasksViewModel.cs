@@ -1,8 +1,8 @@
-﻿using MvvmEssentials.Core.Commands;
+﻿using Microsoft.EntityFrameworkCore;
+using MvvmEssentials.Core.Commands;
 using MvvmEssentials.Core.Navigation;
-using MvvmEssentials.WPF.Navigation;
+using MvvmEssentials.Navigation.WPF.Navigation;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using TodoApp.Core.DataModels;
 using TodoApp.Core.Services;
 
@@ -32,25 +32,20 @@ namespace TodoApp.ViewModels
             });
         }
 
-        protected override void OnUserTaskDeleted(object? sender, AddingNewEventArgs e)
+        protected override async void OnChangesSaved(object? sender, SavedChangesEventArgs e)
         {
-            if (e.NewObject is UserTask task)
-                AllTasks.Remove(task);
-
-            base.OnUserTaskDeleted(sender, e);
+            base.OnChangesSaved(sender, e);
+            await UpdateTasksCollection();
         }
 
-        protected override void OnUserTaskAdded(object? sender, AddingNewEventArgs e)
-        {
-            if (e.NewObject is UserTask task)
-                AllTasks.Add(task);
-
-            base.OnUserTaskAdded(sender, e);
-        }
-
-        public async void OnNavigatedTo(INavigationParameters parameters)
+        private async Task UpdateTasksCollection()
         {
             AllTasks = new(await userTaskService.GetAllUserTasksAsync(CancellationToken.None));
+            OnPropertyChanged(nameof(AllTasks));
+        }
+        public async void OnNavigatedTo(INavigationParameters parameters)
+        {
+            await UpdateTasksCollection();
         }
 
         public void OnNavigatedFrom()

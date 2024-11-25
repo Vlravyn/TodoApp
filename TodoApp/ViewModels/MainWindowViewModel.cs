@@ -2,7 +2,9 @@
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Toolkit.Uwp.Notifications;
 using MvvmEssentials.Core.Navigation;
-using MvvmEssentials.WPF.Navigation;
+using MvvmEssentials.Navigation.WPF.Navigation;
+using TodoApp.Core;
+using TodoApp.Core.Services;
 
 namespace TodoApp.ViewModels
 {

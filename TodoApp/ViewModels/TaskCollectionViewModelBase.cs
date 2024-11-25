@@ -1,6 +1,7 @@
 ﻿using MvvmEssentials.Core;
 using MvvmEssentials.Core.Commands;
 using MvvmEssentials.Core.Navigation;
+using MvvmEssentials.Navigation.WPF.Navigation;
 using MvvmEssentials.WPF.Navigation;
 using System.ComponentModel;
 using TodoApp.Core.DataModels;
@@ -21,6 +22,7 @@ namespace TodoApp.ViewModels
             this.userTaskService.UserTaskAdded += OnUserTaskAdded;
             this.userTaskService.UserTaskDeleted += OnUserTaskDeleted;
             this.userTaskService.UserTaskUpdated += OnUserTaskUpdated;
+            this.userTaskService.UserTaskSavedChanges += OnChangesSaved;
         }
 
         #region ICommands
@@ -32,8 +34,11 @@ namespace TodoApp.ViewModels
 
         #endregion ICommands
 
-        #region Private Methods
+        #region Methods
 
+        protected virtual void OnChangesSaved(object? sender, Microsoft.EntityFrameworkCore.SavedChangesEventArgs e)
+        {
+        }
         protected virtual void OnUserTaskUpdated(object? sender, AddingNewEventArgs e)
         {
             UserTask task = (UserTask)e.NewObject;

@@ -76,7 +76,7 @@
                                         HorizontalAlignment="Left"
                                         FontSize="12"
                                         TextAlignment="Left"
-                                        Visibility="{Binding Steps, Converter={valueConverters:StepsToVisibilityConverter}, UpdateSourceTrigger=Explicit}">
+                                        Visibility="{Binding Steps, Converter={valueConverters:CollectionToVisibilityConverter}, UpdateSourceTrigger=Explicit}">
                                         <Run Text="{Binding Path=Steps, Converter={valueConverters:StepsToCompletedCountConverter}}" />
                                         <Run Text="of" />
                                         <Run Text="{Binding Path=Steps.Count, Mode=OneWay}" />
@@ -128,5 +128,13 @@
             Command="{Binding AddNewTaskCommand}"
             Content="Add new Task"
             Foreground="{ui:ThemeResource TextOnAccentFillColorPrimaryBrush}" />
+
+        <TextBlock
+            Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+            Visibility="{Binding AllTasks, Converter={valueConverters:CollectionToVisibilityConverter}, ConverterParameter={StaticResource True}}"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Center"
+            FontSize="18"
+            Text="There are not any tasks." />
     </Grid>
 </Page>

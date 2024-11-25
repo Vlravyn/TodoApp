@@ -1,5 +1,5 @@
-﻿using MvvmEssentials.Core.Navigation;
-using MvvmEssentials.WPF;
+﻿using MvvmEssentials.Core;
+using MvvmEssentials.Core.Navigation;
 using System.Runtime.Serialization;
 using TodoApp.Views;
 

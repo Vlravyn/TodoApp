@@ -25,16 +25,14 @@
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.0" />
     <PackageReference Include="Microsoft.Toolkit.Uwp.Notifications" Version="7.1.3" />
     <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.135" />
-    <PackageReference Include="MvvmEssentials.Core" Version="1.0.0" />
+    <PackageReference Include="MvvmEssentials.Core" Version="1.0.1" />
     <PackageReference Include="MvvmEssentials.Navigation.WPF" Version="1.0.0" />
     <PackageReference Include="WPF-UI" Version="3.0.5" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\MvvmEssentials.WPF\MvvmEssentials.WPF.csproj" />
     <ProjectReference Include="..\MvvmEssentials.WPF\MvvmEssentials.WPF.csproj" />
     <ProjectReference Include="..\TodoApp.Core\TodoApp.Core.csproj" />
-    <ProjectReference Include="..\TodoApp.ReminderService\TodoApp.Reminder.csproj" />
   </ItemGroup>
 
 </Project>

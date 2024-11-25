@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using Microsoft.EntityFrameworkCore;
+using System.ComponentModel;
 using TodoApp.Core.DataModels;
 
 namespace TodoApp.Core.Services
@@ -9,10 +10,9 @@ namespace TodoApp.Core.Services
     public interface IUserTaskService
     {
         event EventHandler<AddingNewEventArgs> UserTaskAdded;
-
         event EventHandler<AddingNewEventArgs> UserTaskDeleted;
-
         event EventHandler<AddingNewEventArgs> UserTaskUpdated;
+        event EventHandler<SavedChangesEventArgs> UserTaskSavedChanges;
 
         /// <summary>
         /// Adds a new user task to save

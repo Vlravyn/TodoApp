@@ -2,6 +2,7 @@
 using MvvmEssentials.Core;
 using MvvmEssentials.Core.Commands;
 using MvvmEssentials.Core.Navigation;
+using MvvmEssentials.Navigation.WPF.Navigation;
 using MvvmEssentials.WPF.Navigation;
 using System.Collections.ObjectModel;
 using System.ComponentModel;

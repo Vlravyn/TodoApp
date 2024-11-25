@@ -1,6 +1,6 @@
-﻿using MvvmEssentials.Core.Navigation;
+﻿using Microsoft.EntityFrameworkCore;
+using MvvmEssentials.Core.Navigation;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using TodoApp.Core.DataModels;
 using TodoApp.Core.Services;
 
@@ -23,32 +23,27 @@ namespace TodoApp.ViewModels
 
         #endregion Constructors
 
-        #region Private Methods
+        #region Methods
 
-        protected override void OnUserTaskDeleted(object? sender, AddingNewEventArgs e)
+        protected async override void OnChangesSaved(object? sender, SavedChangesEventArgs e)
         {
-            base.OnUserTaskDeleted(sender, e);
-            if (sender is UserTask task && CompletedTasks.Contains(task))
-                CompletedTasks.Remove(task);
+            base.OnChangesSaved(sender, e);
+            await UpdateList();
         }
 
-        protected override void OnUserTaskUpdated(object? sender, AddingNewEventArgs e)
+        /// <summary>
+        /// Updates the <see cref="CompletedTasks"/>
+        /// </summary>
+        private async Task UpdateList()
         {
-            base.OnUserTaskUpdated(sender , e);
-            if (sender is UserTask task && task.IsCompleted && !CompletedTasks.Contains(task))
-                CompletedTasks.Add(task);
-        }
-
-        protected override void OnUserTaskAdded(object? sender, AddingNewEventArgs e)
-        {
-            base.OnUserTaskAdded(sender, e);
-            if (sender is UserTask task && task.IsCompleted)
-                CompletedTasks.Add(task);
+            CompletedTasks = new ObservableCollection<UserTask>(await userTaskService.GetCompletedUserTasksAsync());
+            OnPropertyChanged(nameof(CompletedTasks));
         }
 
         public async void OnNavigatedTo(INavigationParameters parameters)
         {
-            CompletedTasks = new ObservableCollection<UserTask>(await userTaskService.GetCompletedUserTasksAsync());
+            if(CompletedTasks is null ||  CompletedTasks.Count == 0)
+                await UpdateList();
         }
 
         public void OnNavigatedFrom()

@@ -8,7 +8,7 @@
     xmlns:local="clr-namespace:TodoApp.Views"
     xmlns:main="clr-namespace:TodoApp"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:mvvm="clr-namespace:MvvmEssentials.WPF.Navigation;assembly=MvvmEssentials.WPF"
+    xmlns:mvvm="clr-namespace:MvvmEssentials.Navigation.WPF.Navigation;assembly=MvvmEssentials.Navigation.WPF"
     xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
     xmlns:viewmodels="clr-namespace:TodoApp.ViewModels"
     x:Name="mainWindow"
@@ -71,7 +71,7 @@
             </ui:DynamicScrollViewer>
 
             <ui:DynamicScrollViewer Grid.Column="2">
-                <Frame mvvm:NavigationNamesAP.NavigationName="TaskDetailRegion"/>
+                <Frame mvvm:NavigationNamesAP.NavigationName="TaskDetailRegion" />
             </ui:DynamicScrollViewer>
         </Grid>
     </Grid>

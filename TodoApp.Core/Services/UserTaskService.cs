@@ -10,14 +10,14 @@ namespace TodoApp.Core.Services
         private readonly UserTasksDbContext dbContext;
 
         public event EventHandler<AddingNewEventArgs> UserTaskAdded;
-
         public event EventHandler<AddingNewEventArgs> UserTaskDeleted;
-
         public event EventHandler<AddingNewEventArgs> UserTaskUpdated;
+        public event EventHandler<SavedChangesEventArgs> UserTaskSavedChanges;
 
         public UserTaskService(UserTasksDbContext dbContext)
         {
             this.dbContext = dbContext;
+            dbContext.SavedChanges += (_, e) => UserTaskSavedChanges?.Invoke(this, e);
         }
 
         /// <summary>
@@ -52,7 +52,7 @@ namespace TodoApp.Core.Services
         public async Task<IEnumerable<UserTask>> GetAllUserTasksAsync(CancellationToken token = default)
         {
             await dbContext.Database.EnsureCreatedAsync(token);
-            return await dbContext.UserTasks.ToListAsync(token);
+            return await dbContext.UserTasks.AsTracking().ToListAsync(token);
         }
 
         public async Task<IEnumerable<UserTask>?> GetByTitleAsync(string title, CancellationToken token = default)
@@ -71,7 +71,7 @@ namespace TodoApp.Core.Services
 
         public async Task<IEnumerable<UserTask>> GetCompletedUserTasksAsync(CancellationToken token = default)
         {
-            return await dbContext.UserTasks.Where(t => t.IsCompleted).ToListAsync(token);
+            return await dbContext.UserTasks.Where(t => t.IsCompleted).AsTracking().ToListAsync(token);
         }
     }
 }
