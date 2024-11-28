@@ -6,10 +6,27 @@ namespace TodoApp.CustomControls
     [TemplatePart(Name = "PART_ContentHost", Type = typeof(object))]
     public class DateTimePicker : Control
     {
+        //Set to true when the Date/Time is changing to prevent looping in callbacks.
+        bool isDateOrTimeChangingFlag = false;
+
+        //Set to true when the SelectedDateTime is changing to prevent looping in callbacks.
+        bool isDateTimeChangingFlag = false;
+
         #region Events
 
+        /// <summary>
+        /// Raises when the <see cref="SelectedDateTime"/> changes
+        /// </summary>
         public event EventHandler SelectedDateTimeChanged;
+
+        /// <summary>
+        /// Raises when the picker is opened
+        /// </summary>
         public event RoutedEventHandler PickerOpened;
+
+        /// <summary>
+        /// Raises when the picker is closed.
+        /// </summary>
         public event RoutedEventHandler PickerClosed;
 
         public static readonly RoutedEvent ClickEvent = EventManager.RegisterRoutedEvent(nameof(Click), RoutingStrategy.Bubble, typeof(RoutedEventHandler), typeof(DateTimePicker));
@@ -34,17 +51,24 @@ namespace TodoApp.CustomControls
 
         #region Public Properties
 
+        /// <summary>
+        /// Stores if the picker is using default <see cref="DateTime"/> value or the value was set by the user.
+        /// </summary>
         public bool IsDateTimeExplicitlySet
         {
             get => (bool)GetValue(IsDateTimeExplicitlySetProperty);
             private set => SetValue(IsDateTimeExplicitlySetProperty, value);
         }
+
         public CornerRadius CornerRadius
         {
             get => (CornerRadius)GetValue(CornerRadiusProperty);
             set => SetValue(CornerRadiusProperty, value);
         }
 
+        /// <summary>
+        /// The content for the <see cref="DateTimePicker"/> control
+        /// </summary>
         public object Content
         {
             get => GetValue(ContentProperty);
@@ -78,6 +102,9 @@ namespace TodoApp.CustomControls
             set => SetValue(SelectedDateTimeProperty, value);
         }
 
+        /// <summary>
+        /// Represents if the <see cref="DateTimePicker"/> is opened.
+        /// </summary>
         public bool IsOpen
         {
             get => (bool)GetValue(IsOpenProperty);
@@ -95,7 +122,6 @@ namespace TodoApp.CustomControls
 
         #endregion
 
-        private DateTime oldValue;
         #region Private Methods
 
         private static void IsOpenChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -103,14 +129,9 @@ namespace TodoApp.CustomControls
             if (d is DateTimePicker p)
             {
                 if (p.IsOpen)
-                {
                     p.PickerOpened?.Invoke(p, new RoutedEventArgs());
-                    p.oldValue = p.SelectedDateTime;
-                }
                 else
-                {
                     p.PickerClosed?.Invoke(p, new RoutedEventArgs());
-                }
             }
         }
 
@@ -143,9 +164,6 @@ namespace TodoApp.CustomControls
                     picker.IsDateTimeExplicitlySet = true;
             }
         }
-
-        bool isDateOrTimeChangingFlag = false;
-        bool isDateTimeChangingFlag = false;
         #endregion
     }
 }

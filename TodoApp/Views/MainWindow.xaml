@@ -37,12 +37,15 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
+        <!--Title bar-->
         <Border
             Grid.Row="0"
             BorderBrush="{ui:ThemeResource ControlStrokeColorOnAccentDefaultBrush}"
             BorderThickness="0,0,0,1">
             <ui:TitleBar Title="Todo App" />
         </Border>
+        
+        <!--WindowContent-->
         <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="auto" />
@@ -61,14 +64,14 @@
                         Content="All"
                         Icon="{ui:SymbolIcon Symbol=Square20,
                                              FontSize=18}"
-                        Style="{StaticResource NavigationButtonExpandableButton}" />
+                        Style="{StaticResource NavigationExpandableButton}" />
                     <ui:Button
                         Command="{Binding NavigateCommand}"
                         CommandParameter="{x:Static main:ViewType.CompletedTasks}"
                         Content="Completed"
                         Icon="{ui:SymbolIcon Symbol=CheckmarkCircle20,
                                              FontSize=18}"
-                        Style="{StaticResource NavigationButtonExpandableButton}" />
+                        Style="{StaticResource NavigationExpandableButton}" />
                     <Separator Foreground="White" />
                     <ItemsControl ItemsSource="{Binding TaskLists}">
                         <ItemsControl.ItemsPanel>
@@ -83,7 +86,7 @@
                                     CommandParameter="{Binding}"
                                     Content="{Binding Title}"
                                     Icon="{ui:SymbolIcon Symbol=LineHorizontal320}"
-                                    Style="{StaticResource NavigationButtonExpandableButton}">
+                                    Style="{StaticResource NavigationExpandableButton}">
                                     <Button.Resources>
                                         <main:BindingProxy x:Key="host" Data="{Binding RelativeSource={RelativeSource AncestorType=ItemsControl}, Path=DataContext}" />
                                     </Button.Resources>

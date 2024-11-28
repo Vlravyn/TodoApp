@@ -89,6 +89,7 @@
         </Setter>
     </Style>
 
+    <!--  Uses CustomItemCheckBox with star symbol set and default with some animations  -->
     <Style
         x:Key="StarIconCheckBox"
         BasedOn="{StaticResource CustomIconCheckBox}"
@@ -115,9 +116,9 @@
                                 BeginTime="0:0:0:0.1"
                                 Storyboard.TargetProperty="(ui:SymbolIcon.FontSize)"
                                 To="28"
-                                Duration="0:0:0:0.5">
+                                Duration="0:0:0:0.3">
                                 <DoubleAnimation.EasingFunction>
-                                    <BackEase Amplitude="1.5" EasingMode="EaseOut" />
+                                    <BackEase Amplitude="1.1" EasingMode="EaseOut" />
                                 </DoubleAnimation.EasingFunction>
                             </DoubleAnimation>
                         </Storyboard>

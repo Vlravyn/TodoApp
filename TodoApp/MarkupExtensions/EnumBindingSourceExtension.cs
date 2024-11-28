@@ -2,6 +2,9 @@
 
 namespace TodoApp
 {
+    /// <summary>
+    /// Allows to use Enum values as ItemsSource.
+    /// </summary>
     public class EnumBindingSourceExtension : MarkupExtension
     {
         public Type EnumType { get; private set; }
@@ -14,9 +17,6 @@ namespace TodoApp
             EnumType = enumType;
         }
 
-        public override object ProvideValue(IServiceProvider serviceProvider)
-        {
-            return Enum.GetValues(EnumType);
-        }
+        public override object ProvideValue(IServiceProvider serviceProvider) => Enum.GetValues(EnumType);
     }
 }

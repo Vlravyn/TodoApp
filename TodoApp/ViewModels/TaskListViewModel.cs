@@ -1,5 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using MvvmEssentials.Core;
+﻿using MvvmEssentials.Core;
 using MvvmEssentials.Core.Commands;
 using MvvmEssentials.Core.Navigation;
 using System.Collections.ObjectModel;
@@ -15,18 +14,15 @@ namespace TodoApp.ViewModels
         private readonly IUserTaskService userTaskService;
 
         public ObservableCollection<UserTask> TasksOnThisList { get; set; }
-
         public TaskList CurrentTaskList
         {
             get => _currentTaskList;
             set => SetProperty(ref _currentTaskList, value);
         }
+        
+
         public RelayCommandAsync SaveChangesCommand => new(SaveChangesAsync);
 
-        private async Task SaveChangesAsync(CancellationToken token)
-        {
-            await userTaskService.SaveChangesAsync(token);
-        }
 
         public TaskListViewModel(IUserTaskService userTaskService)
         {
@@ -34,24 +30,37 @@ namespace TodoApp.ViewModels
             userTaskService.TaskListUpdated += OnTaskListUpdated;
         }
 
-        private void OnTaskListUpdated(object? sender, AddingNewEventArgs e)
+
+        private async Task SaveChangesAsync(CancellationToken token)
         {
-            CurrentTaskList = e.NewObject as TaskList;
-            OnPropertyChanged(nameof(CurrentTaskList));
-            OnPropertyChanged(nameof(CurrentTaskList.Title));
-            OnPropertyChanged(nameof(CurrentTaskList.Tasks));
+            await userTaskService.SaveChangesAsync(token);
         }
 
-        public void OnNavigatedTo(INavigationParameters parameters)
+        private void OnTaskListUpdated(object? sender, AddingNewEventArgs e)
         {
-            var tl = parameters.FirstOrDefault(t => t.Key == nameof(TaskList));
-            if(tl.Value is TaskList taskList)
+            if(e.NewObject is TaskList taskList && taskList.Id == CurrentTaskList.Id)
             {
                 CurrentTaskList = taskList;
                 OnPropertyChanged(nameof(CurrentTaskList));
                 OnPropertyChanged(nameof(CurrentTaskList.Title));
                 OnPropertyChanged(nameof(CurrentTaskList.Tasks));
             }
+        }
+
+        public void OnNavigatedTo(INavigationParameters parameters)
+        {
+            var pair = parameters.FirstOrDefault(t => t.Key == nameof(TaskList));
+
+            if (pair.Equals(default(KeyValuePair<string, object>)))
+                throw new ArgumentException($"The passed in parameter does not contain a {nameof(KeyValuePair)} with key {nameof(TaskList)} in {nameof(TaskDetailViewModel)}");
+
+            if (pair.Value is not TaskList)
+                throw new ArgumentException($"Unknown type was passed as parameter to {nameof(TaskDetailViewModel)} with key {nameof(TaskList)}");
+
+            CurrentTaskList = (TaskList)pair.Value;
+            OnPropertyChanged(nameof(CurrentTaskList));
+            OnPropertyChanged(nameof(CurrentTaskList.Title));
+            OnPropertyChanged(nameof(CurrentTaskList.Tasks));
         }
 
         public void OnNavigatedFrom()

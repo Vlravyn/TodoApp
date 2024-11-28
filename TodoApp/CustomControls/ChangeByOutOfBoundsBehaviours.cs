@@ -1,5 +1,8 @@
 ﻿namespace TodoApp.CustomControls
 {
+    /// <summary>
+    /// The behaviour of <see cref="NumberBox"/> when the user tries to go above the max value or below the minimum value.
+    /// </summary>
     public enum ChangeByOutOfBoundsBehaviours
     {
         /// <summary>

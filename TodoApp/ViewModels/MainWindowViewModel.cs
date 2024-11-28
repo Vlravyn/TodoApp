@@ -20,7 +20,7 @@ namespace TodoApp.ViewModels
         public ObservableCollection<TaskList> TaskLists { get; set; }
 
 
-        public RelayCommand<Enum> NavigateCommand => new RelayCommand<Enum>(Navigate);
+        public RelayCommand<Enum> NavigateCommand => new(Navigate);
         public RelayCommand<TaskList> OpenTaskListCommand => new(OpenTaskList);
         public RelayCommand CreateNewTaskListCommand => new(CreateNewTaskList);
         public RelayCommand OnLoadedCommand => new(OnLoaded);
@@ -70,7 +70,8 @@ namespace TodoApp.ViewModels
 
         private void OnTaskListAdded(object? sender, AddingNewEventArgs e)
         {
-            TaskLists.Add(e.NewObject as TaskList);
+            if(e.NewObject is TaskList taskList)
+                TaskLists.Add(taskList);
         }
 
         private async void OnLoaded()

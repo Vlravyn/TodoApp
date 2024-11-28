@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using MvvmEssentials.Core;
 using MvvmEssentials.Core.Navigation;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -7,28 +8,25 @@ using TodoApp.Core.Services;
 
 namespace TodoApp.ViewModels
 {
-    public class CompletedTasksViewModel : TaskCollectionViewModelBase, INavigationAware
+    public class CompletedTasksViewModel : ObservableObject, INavigationAware
     {
-        #region Public Properties
+        private readonly IUserTaskService _userTaskService;
 
-        public ObservableCollection<UserTask> CompletedTasks { get; set; } = new();
+        public ObservableCollection<UserTask> CompletedTasks { get; set; } = [];
 
-        #endregion Public Properties
-
-        #region Constructors
-
-        public CompletedTasksViewModel(IUserTaskService userTaskService, INavigationService navigationService)
-            : base(userTaskService, navigationService)
+        /// <summary>
+        /// Creates an instance off <see cref="CompletedTasksViewModel"/>
+        /// </summary>
+        public CompletedTasksViewModel(IUserTaskService userTaskService)
         {
+            _userTaskService = userTaskService;
+            _userTaskService.SavedChanges += OnChangesSaved;
+            _userTaskService.UserTaskDeleted += OnUserTaskDeleted;
+            _userTaskService.UserTaskUpdated += OnUserTaskUpdated;
         }
 
-        #endregion Constructors
-
-        #region Methods
-
-        protected override void OnUserTaskUpdated(object? sender, AddingNewEventArgs e)
+        private void OnUserTaskUpdated(object? sender, AddingNewEventArgs e)
         {
-            base.OnUserTaskUpdated(sender, e);
             if (e.NewObject is UserTask task)
             {
                 if (CompletedTasks.Contains(task))
@@ -43,15 +41,13 @@ namespace TodoApp.ViewModels
                 }
             }
         }
-        protected override void OnUserTaskDeleted(object? sender, AddingNewEventArgs e)
+        private void OnUserTaskDeleted(object? sender, AddingNewEventArgs e)
         {
-            base.OnUserTaskDeleted(sender, e);
-            if (CompletedTasks.Contains(e.NewObject))
-                CompletedTasks.Remove(((UserTask)e.NewObject));
+            if (e.NewObject is UserTask userTask && CompletedTasks.Contains(e.NewObject))
+                CompletedTasks.Remove(userTask);
         }
-        protected override void OnChangesSaved(object? sender, SavedChangesEventArgs e)
+        private void OnChangesSaved(object? sender, SavedChangesEventArgs e)
         {
-            base.OnChangesSaved(sender, e);
             OnPropertyChanged(nameof(CompletedTasks));
         }
 
@@ -68,6 +64,5 @@ namespace TodoApp.ViewModels
         {
         }
 
-        #endregion Private Methods
     }
 }

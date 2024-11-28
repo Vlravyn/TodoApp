@@ -80,24 +80,29 @@ namespace TodoApp.CustomControls
 
         protected override void OnPreviewTextInput(TextCompositionEventArgs e)
         {
-            var text = Text.Insert(CaretIndex, e.Text);
-            if (Regex is not null && !Regex.IsMatch(text))
+            //Do not let the text be input if the final text is not matching the used regex.
+            if (Regex is not null && !Regex.IsMatch(Text.Insert(CaretIndex, e.Text)))
                 e.Handled = true;
         }
 
         #region Private Methods
 
         /// <summary>
-        /// Disables the cut copy paste commands for this textbox
+        /// Disables the cut copy paste commands for the textbox the subscribes to this method.
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+        /// <param name="sender">the sender of the event</param>
+        /// <param name="e">the event arguments</param>
         private static void CutCopyPasteHandler(object sender, ExecutedRoutedEventArgs e)
         {
             if (e.Command == ApplicationCommands.Cut || e.Command == ApplicationCommands.Copy || e.Command == ApplicationCommands.Paste)
                 e.Handled = true;
         }
 
+        /// <summary>
+        /// Add an <see cref="EventHandler"/> to disable the Cut, Copy and Paste commands for the textbox.
+        /// </summary>
+        /// <param name="d">the <see cref="CustomTextBox"/>which executed this method.</param>
+        /// <param name="e">the event arguments.</param>
         private static void DisableCutCopyPasteCallback(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             if (d is CustomTextBox t && t.DisableCutCopyPaste)

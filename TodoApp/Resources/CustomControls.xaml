@@ -8,6 +8,7 @@
     xmlns:sys="clr-namespace:System;assembly=mscorlib"
     xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml">
 
+    <!--  Default DateTimePicker style  -->
     <Style TargetType="{x:Type customControls:DateTimePicker}">
         <Setter Property="Margin" Value="1" />
         <Setter Property="Background" Value="{ui:ThemeResource ControlFillColorDefaultBrush}" />
@@ -60,7 +61,7 @@
                                 StaysOpen="False"
                                 VerticalOffset="1">
                                 <StackPanel>
-                                    <Calendar  SelectedDate="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Date, Mode=TwoWay}" />
+                                    <Calendar SelectedDate="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Date, Mode=TwoWay}" />
                                     <customControls:TimePicker Time="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Time, Mode=TwoWay}" />
                                 </StackPanel>
                             </Popup>
@@ -79,6 +80,7 @@
         </Setter>
     </Style>
 
+    <!--  Default TimePicker style  -->
     <Style TargetType="{x:Type customControls:TimePicker}">
         <Setter Property="FontSize" Value="18" />
         <Setter Property="Template">
@@ -154,6 +156,7 @@
         </Setter>
     </Style>
 
+    <!--  Default NumberBox style. This is an edited version of WPFUI TextBox  -->
     <Style TargetType="{x:Type customControls:NumberBox}">
         <Setter Property="MaxDecimalPlaces" Value="0" />
         <Setter Property="AllowDecimal" Value="False" />
@@ -362,6 +365,7 @@
         </Setter>
     </Style>
 
+    <!--  Default CustomTextBox style. This is an edited version of WPFUI TextBox  -->
     <Style TargetType="{x:Type customControls:CustomTextBox}">
         <!--  Universal WPF UI focus  -->
         <Setter Property="FocusVisualStyle" Value="{DynamicResource DefaultControlFocusVisualStyle}" />

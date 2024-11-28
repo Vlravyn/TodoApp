@@ -10,12 +10,12 @@
     <UseWPF>true</UseWPF>
     <UserSecretsId>2744cd1b-f795-4056-9f56-ae2673a7fbe8</UserSecretsId>
     <Platforms>AnyCPU;x64;x86</Platforms>
+	  <CsWinRTAotOptimizerEnabled>false</CsWinRTAotOptimizerEnabled>
   </PropertyGroup>
 
   <ItemGroup>
     <None Remove="userTasks.db" />
   </ItemGroup>
-
   <ItemGroup>
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.3.2" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.0">

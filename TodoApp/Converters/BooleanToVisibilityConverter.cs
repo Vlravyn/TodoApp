@@ -4,6 +4,10 @@ using System.Windows.Data;
 
 namespace TodoApp.Converters
 {
+    /// <summary>
+    /// Converts a <see cref="bool"/> to <see cref="Visibility"/>.
+    /// Pass <see langword="true"/> as parameter to use inverted version.
+    /// </summary>
     [ValueConversion(typeof(bool), typeof(Visibility))]
     public class BooleanToVisibilityConverter : BaseValueConverter<BooleanToVisibilityConverter>
     {
@@ -13,9 +17,15 @@ namespace TodoApp.Converters
                 return Visibility.Collapsed;
 
             if (value is bool b)
-                return b ? Visibility.Visible : Visibility.Collapsed;
+            {
+                //use inverted version if true is passed as parameter
+                if(parameter is bool isInverted && isInverted)
+                    return b ? Visibility.Collapsed : Visibility.Visible;
+                else
+                    return b ? Visibility.Visible : Visibility.Collapsed;
+            }
 
-            throw new ArgumentException($"unknown type passed in to {nameof(InvertedBooleanToVisibilityConverter)}");
+            throw new ArgumentException($"unknown type passed in to {nameof(BooleanToVisibilityConverter)}");
         }
 
         public override object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

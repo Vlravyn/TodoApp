@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using Microsoft.EntityFrameworkCore;
 using MvvmEssentials.Core.Commands;
 using MvvmEssentials.Core.Navigation;
 using MvvmEssentials.Navigation.WPF.Navigation;
@@ -9,17 +10,34 @@ using TodoApp.Core.Services;
 
 namespace TodoApp.ViewModels
 {
-    public class AllTasksViewModel : TaskCollectionViewModelBase, INavigationAware
+    public class AllTasksViewModel : ObservableObject, INavigationAware
     {
-        public ObservableCollection<UserTask> AllTasks { get; set; } = new();
+        private readonly IUserTaskService _userTaskService;
+        private readonly INavigationService _navigationService;
+
+        /// <summary>
+        /// This property contains all the tasks.
+        /// </summary>
+        public ObservableCollection<UserTask> AllTasks { get; set; } = [];
 
         public RelayCommandAsync AddNewTaskCommand => new(AddNewTask);
 
+        /// <summary>
+        /// Creates an instance of <see cref="AllTasksViewModel"/>
+        /// </summary>
         public AllTasksViewModel(IUserTaskService userTaskService, INavigationService navigationService)
-            : base(userTaskService, navigationService)
         {
+            _userTaskService = userTaskService;
+            _navigationService = navigationService;
+            _userTaskService.UserTaskAdded += OnUserTaskAdded;
+            _userTaskService.UserTaskDeleted += OnUserTaskDeleted;
+            _userTaskService.SavedChanges += OnChangesSaved;
         }
 
+        /// <summary>
+        /// Adds a new task and navigates to it.
+        /// </summary>
+        /// <param name="token">the cancellation token</param>
         private async Task AddNewTask(CancellationToken token = default)
         {
             var task = await _userTaskService.AddAsync(new UserTask()
@@ -33,22 +51,19 @@ namespace TodoApp.ViewModels
             });
         }
 
-        protected override void OnChangesSaved(object? sender, SavedChangesEventArgs e)
+        private void OnChangesSaved(object? sender, SavedChangesEventArgs e)
         {
-            base.OnChangesSaved(sender, e);
             OnPropertyChanged(nameof(AllTasks));
         }
 
-        protected override void OnUserTaskAdded(object? sender, AddingNewEventArgs e)
+        private void OnUserTaskAdded(object? sender, AddingNewEventArgs e)
         {
-            base.OnUserTaskAdded(sender, e);
             if(e.NewObject is UserTask ut && !AllTasks.Contains(ut))
                 AllTasks.Add(ut);
         }
 
-        protected override void OnUserTaskDeleted(object? sender, AddingNewEventArgs e)
+        private void OnUserTaskDeleted(object? sender, AddingNewEventArgs e)
         {
-            base.OnUserTaskDeleted(sender, e);
             if (e.NewObject is UserTask ut && AllTasks.Contains(ut))
                 AllTasks.Remove(ut);
         }

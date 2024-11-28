@@ -30,7 +30,15 @@ namespace TodoApp
             .CreateDefaultBuilder()
             .ConfigureAppConfiguration(c =>
             {
-                c.SetBasePath(Path.GetDirectoryName(Assembly.GetEntryAssembly()!.Location));
+                var entryAssembly = Assembly.GetEntryAssembly();
+                if (entryAssembly is null)
+                    throw new Exception("Entry assembly is null. Occured while cofigurating the application host.");
+
+                var assemblyPath = Path.GetDirectoryName(entryAssembly.Location);
+                if (string.IsNullOrEmpty(assemblyPath))
+                    throw new Exception("Directory path of EntryAssembly is null");
+
+                c.SetBasePath(assemblyPath);
             })
             .ConfigureAppConfiguration(d1 =>
             {
@@ -73,7 +81,11 @@ namespace TodoApp
         /// <returns>Instance of the service or <see langword="null"/>.</returns>
         public static T GetService<T>() where T : class
         {
-            return _host.Services.GetService(typeof(T)) as T;
+            var result = _host.Services.GetService(typeof(T));
+            if (result is T converted)
+                return converted;
+
+            throw new Exception($"Could not find a registered service of type {typeof(T).Name}");
         }
     }
 }

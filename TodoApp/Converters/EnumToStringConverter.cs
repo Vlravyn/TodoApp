@@ -6,7 +6,7 @@ using TodoApp.Core;
 namespace TodoApp.Converters
 {
     /// <summary>
-    /// Converts Enum to string and vice versa.
+    /// Converts <see cref="Enum"/> to string and vice versa.
     /// </summary>
     [ValueConversion(typeof(Enum), typeof(string))]
     public class EnumToStringConverter : BaseValueConverter<EnumToStringConverter>
@@ -20,10 +20,13 @@ namespace TodoApp.Converters
         /// <exception cref="ArgumentException">thrown when <paramref name="value"/> is an unknown type</exception>
         public override object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
+            if (value is null && parameter is null)
+                throw new ArgumentNullException($"{nameof(value)} and {nameof(parameter)}", $"Both the value and parameter of {nameof(EnumToStringConverter)} cannot be null");
+
             Enum enumValue = (Enum)parameter ?? (Enum)value;
 
             if (enumValue is null)
-                throw new ArgumentException("unknown type given as value to EnumToStringConverter");
+                throw new ArgumentException($"unknown type given as value to {nameof(EnumToStringConverter)}");
 
             return enumValue.ToEnumStringValue();
         }
@@ -38,7 +41,9 @@ namespace TodoApp.Converters
         /// <exception cref="InvalidOperationException">thrown when parsing to enum fails</exception>
         public override object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            ArgumentNullException.ThrowIfNull(value);
+            if (value is null)
+                throw new ArgumentNullException(nameof(value), $"the passed in value of {nameof(EnumToStringConverter)} cannot be null");
+
 
             if (!targetType.IsEnum)
                 throw new ArgumentException("TargetType must be an enum");

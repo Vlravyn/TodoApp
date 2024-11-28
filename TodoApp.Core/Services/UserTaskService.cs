@@ -6,6 +6,9 @@ using TodoApp.Core.EntityFramework;
 
 namespace TodoApp.Core.Services
 {
+    /// <summary>
+    /// Implementation of <see cref="IUserTaskService"/>
+    /// </summary>
     public class UserTaskService : IUserTaskService
     {
         private readonly UserTasksDbContext dbContext;
@@ -18,6 +21,10 @@ namespace TodoApp.Core.Services
         public event EventHandler<AddingNewEventArgs> TaskListDeleted;
         public event EventHandler<AddingNewEventArgs> TaskListUpdated;
 
+        /// <summary>
+        /// Creates an instance of <see cref="UserTaskService"/>
+        /// </summary>
+        /// <param name="dbContext">the <see cref="DbContext"/> to use for this service</param>
         public UserTaskService(UserTasksDbContext dbContext)
         {
             this.dbContext = dbContext;
@@ -27,11 +34,11 @@ namespace TodoApp.Core.Services
         /// <summary>
         /// <inheritdoc/>
         /// </summary>
-        /// <exception cref="ArgumentNullException">thrown user task is null</exception>
+        /// <exception cref="ArgumentNullException">thrown user task is <see langword="null"/></exception>
         public async Task<UserTask> AddAsync(UserTask userTask, CancellationToken token = default)
         {
             if (userTask == null)
-                throw new ArgumentNullException("cannot add null to the database");
+                throw new ArgumentNullException(nameof(userTask), "cannot add null to the database");
 
             await dbContext.Database.EnsureCreatedAsync(token);
             var tracked = await dbContext.UserTasks.AddAsync(userTask, token);

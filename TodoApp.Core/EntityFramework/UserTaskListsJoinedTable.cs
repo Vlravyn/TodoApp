@@ -2,6 +2,9 @@
 
 namespace TodoApp.Core.EntityFramework
 {
+    /// <summary>
+    /// Entity for Many-To-Many Relationship between <see cref="UserTask"/> and <see cref="TaskList"/>
+    /// </summary>
     public class UserTaskListsJoinedTable
     {
         public Guid UserTaskId { get; set; }

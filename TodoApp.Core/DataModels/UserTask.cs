@@ -4,6 +4,9 @@ using TodoApp.Core.EntityFramework;
 
 namespace TodoApp.Core.DataModels
 {
+    /// <summary>
+    /// Model class or User's task or Todos.
+    /// </summary>
     public class UserTask : ObservableObject
     {
         #region Private Members
@@ -16,6 +19,9 @@ namespace TodoApp.Core.DataModels
 
         #endregion Private Members
 
+        /// <summary>
+        /// Creates an instance of <see cref="UserTask"/>
+        /// </summary>
         public UserTask()
         {
             Id = Guid.NewGuid();
@@ -40,6 +46,9 @@ namespace TodoApp.Core.DataModels
             }
         }
 
+        /// <summary>
+        /// The description for this task.
+        /// </summary>
         public string? Description
         {
             get => _description;
@@ -58,27 +67,22 @@ namespace TodoApp.Core.DataModels
             set => SetProperty(ref _isImportant, value);
         }
 
-        public ObservableCollection<Step> Steps { get; set; } = new();
+        /// <summary>
+        /// Sub steps to complete this user task
+        /// </summary>
+        public ObservableCollection<Step> Steps { get; set; } = [];
 
         /// <summary>
         /// The <see cref="TaskList"/> that this user task is part of.
         /// </summary>
-        public ObservableCollection<TaskList> TaskLists { get; set; } = new();
-
-        internal  List<UserTaskListsJoinedTable> UserTaskLists { get; set; } = new();
+        public ObservableCollection<TaskList> TaskLists { get; set; } = [];
 
         /// <summary>
-        /// CreatedAt property local time
+        /// The time that this task was created at.
         /// </summary>
         public DateTime CreatedAt
         {
             get => CreatedAtUtc.ToLocalTime();
-        }
-
-        public DateTime CreatedAtUtc
-        {
-            get => _createdAtUtc;
-            init => _createdAtUtc = value;
         }
 
         /// <summary>
@@ -110,6 +114,15 @@ namespace TodoApp.Core.DataModels
         }
 
         /// <summary>
+        /// CreatedAt for DbContext that stores the actual creation date in UTC
+        /// </summary>
+        public DateTime CreatedAtUtc
+        {
+            get => _createdAtUtc;
+            init => _createdAtUtc = value;
+        }
+
+        /// <summary>
         /// DueDate for DbContext that stores the actual reminder DateTime in UTC
         /// </summary>
         public DateTime? DueDateUtc { get; internal set; }
@@ -118,5 +131,11 @@ namespace TodoApp.Core.DataModels
         /// RemindUser for DbContext that stores the actual reminder DateTime in UTC
         /// </summary>
         public DateTime? RemindUserUtc { get; internal set; }
+
+
+        /// <summary>
+        /// Used for database. Ignore this.
+        /// </summary>
+        internal List<UserTaskListsJoinedTable> UserTaskLists { get; set; } = [];
     }
 }

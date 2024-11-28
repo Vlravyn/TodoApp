@@ -18,13 +18,7 @@ namespace TodoApp.Converters
             var converted = (ICollection)value;
 
             if (converted is null)
-            {
-                return isInverted switch
-                {
-                    true => Visibility.Visible,
-                    _ => Visibility.Collapsed,
-                };
-            }
+                return Visibility.Collapsed;
             else
             {
                 return isInverted switch

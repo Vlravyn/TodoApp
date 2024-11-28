@@ -4,6 +4,9 @@ using TodoApp.Core.EntityFramework;
 
 namespace TodoApp.Core.DataModels
 {
+    /// <summary>
+    /// Custom container for multiple <see cref="UserTask"/>
+    /// </summary>
     public class TaskList : ObservableObject
     {
         private string _title;
@@ -14,14 +17,24 @@ namespace TodoApp.Core.DataModels
 
         public Guid Id { get; set; }
         
+        /// <summary>
+        /// The title for this task list.
+        /// </summary>
         public required string Title
         {
             get => _title;
             set => SetProperty(ref _title, value);
         }
 
-        public ObservableCollection<UserTask> Tasks { get; set; } = new();
-        internal List<UserTaskListsJoinedTable> UserTaskLists { get; set; } = new();
+        /// <summary>
+        /// The <see cref="UserTask"/> that this task list contains
+        /// </summary>
+        public ObservableCollection<UserTask> Tasks { get; set; } = [];
+
+        /// <summary>
+        /// Used for database. Ignore this.
+        /// </summary>
+        internal List<UserTaskListsJoinedTable> UserTaskLists { get; set; } = [];
 
     }
 }

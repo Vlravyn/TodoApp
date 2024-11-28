@@ -20,10 +20,15 @@ namespace TodoApp.CustomControls
         public static readonly DependencyProperty ChangeByProperty = DependencyProperty.Register(nameof(ChangeBy), typeof(double), typeof(NumberBox), new PropertyMetadata());
         public static readonly DependencyProperty NumberProperty = DependencyProperty.Register(nameof(Number), typeof(double?), typeof(NumberBox), new PropertyMetadata(0d, NumberChangedCallback));
         public static readonly DependencyProperty ChangeByButtonVisibilityProperty = DependencyProperty.Register(nameof(ChangeByButtonVisibility), typeof(Visibility), typeof(NumberBox), new PropertyMetadata(Visibility.Visible));
+        
         #endregion DependencyProperties
 
         #region Public Properties
 
+        /// <summary>
+        /// The Behaviour that occurs when the <see cref="Number"/> is set to <see cref="MaximumValue"/> or <see cref="MinimumValue"/> and the user tries to go out of bounds.
+        /// The two behaviours are do not do anything and go to other bound.
+        /// </summary>
         public ChangeByOutOfBoundsBehaviours ChangeByOutOfBoundsBehaviour { get; set; }
 
         /// <summary>
@@ -44,6 +49,10 @@ namespace TodoApp.CustomControls
             set => SetValue(MaximumValueProperty, value);
         }
 
+        /// <summary>
+        /// Allows the number to have only positive and negative values.
+        /// Allows both by default.
+        /// </summary>
         public NumberBoxRange NumberRange
         {
             get => (NumberBoxRange)GetValue(NumberRangeProperty);
@@ -60,7 +69,7 @@ namespace TodoApp.CustomControls
         }
 
         /// <summary>
-        /// Allows the decimal to be used
+        /// Allows the decimal to be used in this <see cref="NumberBox"/>
         /// </summary>
         public bool AllowDecimal
         {
@@ -118,7 +127,14 @@ namespace TodoApp.CustomControls
 
         #region RelayCommand
 
+        /// <summary>
+        /// Attempts to increase the <see cref="Number"/> by amount set in <see cref="ChangeBy"/>
+        /// </summary>
         public RelayCommand IncreaseByCommand => new(() => ChangeNumber(true));
+
+        /// <summary>
+        /// Attempts to decrease the <see cref="Number"/> by amount set in <see cref="ChangeBy"/>
+        /// </summary>
         public RelayCommand DecreaseByCommand => new(() => ChangeNumber(false));
 
         #endregion RelayCommand
@@ -140,10 +156,15 @@ namespace TodoApp.CustomControls
                 NotifyOnTargetUpdated = true,
             });
         }
+
         #endregion Constructors
 
         #region Private methods
 
+        /// <summary>
+        /// Increase or decreases the <see cref="Number"/> by value set in <see cref="ChangeBy"/>
+        /// </summary>
+        /// <param name="isIncreasing">Set this to <see langword="true"/> if the value has to increase, otherwise <see langword="false"/>.</param>
         private void ChangeNumber(bool isIncreasing)
         {
             if (isIncreasing)
@@ -178,6 +199,10 @@ namespace TodoApp.CustomControls
             }
         }
 
+        /// <summary>
+        /// this method allows only characters related to numbers in text input.
+        /// </summary>
+        /// <param name="e">the event args</param>
         protected override void OnPreviewTextInput(TextCompositionEventArgs e)
         {
             var text = Text.Insert(CaretIndex, e.Text);

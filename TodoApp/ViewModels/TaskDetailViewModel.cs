@@ -8,15 +8,11 @@ using TodoApp.Core.Services;
 
 namespace TodoApp.ViewModels
 {
-    public class TaskDetailViewModel : TaskCollectionViewModelBase, INavigationAware
+    public class TaskDetailViewModel : ObservableObject, INavigationAware
     {
-        #region Private members
-
         private UserTask _userTask;
-
-        #endregion Private members
-
-        #region Public properties
+        private readonly IUserTaskService _userTaskService;
+        private readonly INavigationService _navigationService;
 
         public UserTask Task
         {
@@ -24,32 +20,23 @@ namespace TodoApp.ViewModels
             set => SetProperty(ref _userTask, value);
         }
 
-        #endregion Public properties
-
-        #region RelayCommands
-
         public RelayCommand CloseCommand => new(Close);
         public RelayCommand AddNewStepCommand => new(AddNewStep);
         public RelayCommand<Step> ToggleCompletedCommand => new(ToggleCompleted);
         public RelayCommandAsync<Step> DeleteStepCommand => new(DeleteStep);
         public RelayCommandAsync<Step> PromoteToTaskCommand => new(PromoteToTask);
 
-        #endregion RelayCommands
-
-        #region Constructors
-
+        /// <summary>
+        /// Creates an instance of <see cref="TaskDetailViewModel"/>
+        /// </summary>
         public TaskDetailViewModel(IUserTaskService userTaskService, INavigationService navigationService)
-            :base(userTaskService, navigationService)
         {
+            _userTaskService = userTaskService;
+            _navigationService = navigationService;
         }
 
-        #endregion Constructors
-
-        #region Private Methods
-
-        protected override void OnUserTaskDeleted(object? sender, AddingNewEventArgs e)
+        protected void OnUserTaskDeleted(object? sender, AddingNewEventArgs e)
         {
-            base.OnUserTaskDeleted(sender, e);
             if (e.NewObject == Task)
             {
                 Task = null;
@@ -128,10 +115,6 @@ namespace TodoApp.ViewModels
             Task.Steps.Remove(step);
         }
 
-        #endregion Private Methods
-
-        #region INavigationAware
-
         public void OnNavigatedFrom()
         {
             Task = null;
@@ -139,9 +122,15 @@ namespace TodoApp.ViewModels
 
         public void OnNavigatedTo(INavigationParameters parameters)
         {
-            Task = parameters.FirstOrDefault(t => t.Key == nameof(UserTask)).Value as UserTask;
-        }
+            var pair = parameters.FirstOrDefault(t => t.Key == nameof(UserTask));
 
-        #endregion INavigationAware
+            if (pair.Equals(default(KeyValuePair<string, object>)))
+                throw new ArgumentException($"The passed in parameter does not contain a {nameof(KeyValuePair)} with key {nameof(UserTask)} in {nameof(TaskDetailViewModel)}");
+
+            if (pair.Value is not UserTask)
+                throw new ArgumentException($"Unknown type was passed as parameter to {nameof(TaskDetailViewModel)} with key {nameof(UserTask)}");
+
+            Task = (UserTask)pair.Value;
+        }
     }
 }

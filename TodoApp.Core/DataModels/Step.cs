@@ -3,6 +3,9 @@ using MvvmEssentials.Core;
 
 namespace TodoApp.Core.DataModels
 {
+    /// <summary>
+    /// Sub tasks for the <see cref="UserTask"/>
+    /// </summary>
     [Owned]
     public class Step : ObservableObject
     {

@@ -3,6 +3,10 @@ using System.Windows.Data;
 
 namespace TodoApp.Converters
 {
+    /// <summary>
+    /// Returns the maximum value that the <see cref="CustomControls.TimePicker.Hour"/> can have based on the <see cref="CustomControls.TimePicker.Is24HourFormat"/>
+    /// is <see langword="true"/> or <see langword="false"/>
+    /// </summary>
     [ValueConversion(typeof(bool), typeof(int))]
     public class MaxHourValueConverter : BaseValueConverter<MaxHourValueConverter>
     {
@@ -21,10 +25,12 @@ namespace TodoApp.Converters
 
         public override object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
+            //This method is not used anywhere. I just created it because I felt like it.
+
             int? v = (int?)value;
             if (v is not null)
             {
-                if (v == 24)
+                if (v == 23)
                     return true;
                 else
                     return false;

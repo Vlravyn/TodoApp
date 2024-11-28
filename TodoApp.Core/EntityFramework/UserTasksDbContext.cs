@@ -4,6 +4,9 @@ using TodoApp.Core.DataModels;
 
 namespace TodoApp.Core.EntityFramework
 {
+    /// <summary>
+    /// Main DbContext for this application
+    /// </summary>
     public class UserTasksDbContext : DbContext
     {
         public DbSet<UserTask> UserTasks { get; set; }
