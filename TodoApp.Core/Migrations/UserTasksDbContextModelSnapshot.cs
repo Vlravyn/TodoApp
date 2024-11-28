@@ -15,7 +15,22 @@ namespace TodoApp.Core.Migrations
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder.HasAnnotation("ProductVersion", "8.0.8");
+            modelBuilder.HasAnnotation("ProductVersion", "9.0.0");
+
+            modelBuilder.Entity("TodoApp.Core.DataModels.TaskList", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("TaskLists");
+                });
 
             modelBuilder.Entity("TodoApp.Core.DataModels.UserTask", b =>
                 {
@@ -54,6 +69,21 @@ namespace TodoApp.Core.Migrations
                     b.ToTable("UserTasks");
                 });
 
+            modelBuilder.Entity("TodoApp.Core.EntityFramework.UserTaskListsJoinedTable", b =>
+                {
+                    b.Property<Guid>("UserTaskId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("TaskListId")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("UserTaskId", "TaskListId");
+
+                    b.HasIndex("TaskListId");
+
+                    b.ToTable("UserTaskLists");
+                });
+
             modelBuilder.Entity("TodoApp.Core.DataModels.UserTask", b =>
                 {
                     b.OwnsMany("TodoApp.Core.DataModels.Step", "Steps", b1 =>
@@ -83,6 +113,35 @@ namespace TodoApp.Core.Migrations
                         });
 
                     b.Navigation("Steps");
+                });
+
+            modelBuilder.Entity("TodoApp.Core.EntityFramework.UserTaskListsJoinedTable", b =>
+                {
+                    b.HasOne("TodoApp.Core.DataModels.TaskList", "TaskList")
+                        .WithMany("UserTaskLists")
+                        .HasForeignKey("TaskListId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("TodoApp.Core.DataModels.UserTask", "UserTask")
+                        .WithMany("UserTaskLists")
+                        .HasForeignKey("UserTaskId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("TaskList");
+
+                    b.Navigation("UserTask");
+                });
+
+            modelBuilder.Entity("TodoApp.Core.DataModels.TaskList", b =>
+                {
+                    b.Navigation("UserTaskLists");
+                });
+
+            modelBuilder.Entity("TodoApp.Core.DataModels.UserTask", b =>
+                {
+                    b.Navigation("UserTaskLists");
                 });
 #pragma warning restore 612, 618
         }

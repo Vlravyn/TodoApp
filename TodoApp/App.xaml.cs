@@ -49,11 +49,14 @@ namespace TodoApp
                 services.AddSingleton<AllTasksViewModel>();
                 services.AddSingleton<TaskDetailViewModel>();
                 services.AddSingleton<CompletedTasksViewModel>();
+                services.AddSingleton<TaskListViewModel>();
 
                 services.AddSingleton<MainWindow>();
                 services.AddSingleton<AllTasksPage>();
                 services.AddSingleton<CompletedTasksPage>();
                 services.AddSingleton<TaskDetailPage>();
+                services.AddSingleton<TaskListPage>();
+                services.AddTransient<TaskCollectionCardControlViewModel>();
             })
             .Build();
 

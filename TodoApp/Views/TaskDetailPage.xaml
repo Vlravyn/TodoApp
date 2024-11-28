@@ -39,7 +39,10 @@
             Content="Close" />
 
         <!--  Title and steps  -->
-        <Border x:Name="titleBorder" Background="{ui:ThemeResource ControlFillColorTertiaryBrush}" CornerRadius="2">
+        <Border
+            x:Name="titleBorder"
+            Background="{ui:ThemeResource ControlFillColorTertiaryBrush}"
+            CornerRadius="2">
             <StackPanel Orientation="Vertical">
                 <Grid DataContext="{Binding Task}">
                     <Grid.ColumnDefinitions>
@@ -47,15 +50,19 @@
                         <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="auto" />
                     </Grid.ColumnDefinitions>
-                    <CheckBox Grid.Column="0" IsChecked="{Binding IsCompleted}" />
+                    <CheckBox
+                        Grid.Column="0"
+                        Command="{Binding RelativeSource={RelativeSource AncestorType=Border, Mode=FindAncestor}, Path=DataContext.(viewModels:TaskDetailViewModel.UpdateTaskCommand)}"
+                        CommandParameter="{Binding}"
+                        IsChecked="{Binding IsCompleted}" />
                     <TextBox Grid.Column="1" FontSize="24">
                         <TextBox.Text>
                             <Binding
-                                    Mode="TwoWay"
-                                    Path="Title"
-                                    ValidatesOnDataErrors="True"
-                                    ValidatesOnExceptions="True"
-                                    ValidatesOnNotifyDataErrors="True">
+                                Mode="TwoWay"
+                                Path="Title"
+                                ValidatesOnDataErrors="True"
+                                ValidatesOnExceptions="True"
+                                ValidatesOnNotifyDataErrors="True">
                                 <Binding.ValidationRules>
                                     <main:StringNotNullEmptyOrWhitespaceValidationRule ValidatesOnTargetUpdated="True" />
                                 </Binding.ValidationRules>
@@ -63,9 +70,11 @@
                         </TextBox.Text>
                     </TextBox>
                     <CheckBox
-                            Grid.Column="2"
-                            IsChecked="{Binding IsImportant}"
-                            Style="{StaticResource StarIconCheckBox}" />
+                        Grid.Column="2"
+                        Command="{Binding RelativeSource={RelativeSource AncestorType=Border, Mode=FindAncestor}, Path=DataContext.(viewModels:TaskDetailViewModel.UpdateTaskCommand)}"
+                        CommandParameter="{Binding}"
+                        IsChecked="{Binding IsImportant}"
+                        Style="{StaticResource StarIconCheckBox}" />
                 </Grid>
 
                 <ui:VirtualizingItemsControl x:Name="stepsControl" ItemsSource="{Binding Task.Steps}">
@@ -84,20 +93,20 @@
                                 </Grid.ColumnDefinitions>
 
                                 <CheckBox
-                                        x:Name="completedCheckBox"
-                                        Grid.Column="0"
-                                        Margin="2"
-                                        HorizontalAlignment="Center"
-                                        VerticalAlignment="Center"
-                                        IsChecked="{Binding IsCompleted}" />
+                                    x:Name="completedCheckBox"
+                                    Grid.Column="0"
+                                    Margin="2"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    IsChecked="{Binding IsCompleted}" />
                                 <TextBox Grid.Column="1" FontSize="14">
                                     <TextBox.Text>
                                         <Binding
-                                                Mode="TwoWay"
-                                                Path="Title"
-                                                ValidatesOnDataErrors="True"
-                                                ValidatesOnExceptions="True"
-                                                ValidatesOnNotifyDataErrors="True">
+                                            Mode="TwoWay"
+                                            Path="Title"
+                                            ValidatesOnDataErrors="True"
+                                            ValidatesOnExceptions="True"
+                                            ValidatesOnNotifyDataErrors="True">
                                             <Binding.ValidationRules>
                                                 <main:StringNotNullEmptyOrWhitespaceValidationRule ValidatesOnTargetUpdated="True" />
                                             </Binding.ValidationRules>
@@ -105,30 +114,30 @@
                                     </TextBox.Text>
                                 </TextBox>
                                 <ui:Button
-                                        Grid.Column="2"
-                                        VerticalAlignment="Stretch"
-                                        Background="Transparent"
-                                        BorderThickness="0"
-                                        FontSize="12"
-                                        Icon="{ui:SymbolIcon Symbol=MoreVertical16}">
+                                    Grid.Column="2"
+                                    VerticalAlignment="Stretch"
+                                    Background="Transparent"
+                                    BorderThickness="0"
+                                    FontSize="12"
+                                    Icon="{ui:SymbolIcon Symbol=MoreVertical16}">
                                     <i:Interaction.Triggers>
                                         <i:EventTrigger EventName="Click">
                                             <i:ChangePropertyAction
-                                                    PropertyName="IsOpen"
-                                                    TargetName="stepContextMenu"
-                                                    Value="True" />
+                                                PropertyName="IsOpen"
+                                                TargetName="stepContextMenu"
+                                                Value="True" />
                                         </i:EventTrigger>
                                     </i:Interaction.Triggers>
                                 </ui:Button>
                                 <Grid.ContextMenu>
                                     <ContextMenu x:Name="stepContextMenu" Tag="{x:Reference Name=grid}">
                                         <MenuItem
-                                                d:DataContext="{d:DesignInstance Type=dataModels:Step,
-                                                                                 IsDesignTimeCreatable=True}"
-                                                Command="{Binding Source={x:Reference Name=stepsControl}, Path=DataContext.(viewModels:TaskDetailViewModel.ToggleCompletedCommand)}"
-                                                CommandParameter="{Binding}"
-                                                DataContext="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu, Mode=FindAncestor}, Path=Tag.DataContext}"
-                                                Header="Mark as completed">
+                                            d:DataContext="{d:DesignInstance Type=dataModels:Step,
+                                                                             IsDesignTimeCreatable=True}"
+                                            Command="{Binding Source={x:Reference Name=stepsControl}, Path=DataContext.(viewModels:TaskDetailViewModel.ToggleCompletedCommand)}"
+                                            CommandParameter="{Binding}"
+                                            DataContext="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu, Mode=FindAncestor}, Path=Tag.DataContext}"
+                                            Header="Mark as completed">
                                             <i:Interaction.Triggers>
                                                 <i:DataTrigger Binding="{Binding IsCompleted}" Value="True">
                                                     <i:ChangePropertyAction PropertyName="Header" Value="Mark as not completed" />
@@ -139,13 +148,13 @@
                                             </i:Interaction.Triggers>
                                         </MenuItem>
                                         <MenuItem
-                                                Command="{Binding Source={x:Reference Name=stepsControl}, Path=DataContext.(viewModels:TaskDetailViewModel.DeleteStepCommand)}"
-                                                CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu, Mode=FindAncestor}, Path=Tag.DataContext}"
-                                                Header="Delete step" />
+                                            Command="{Binding Source={x:Reference Name=stepsControl}, Path=DataContext.(viewModels:TaskDetailViewModel.DeleteStepCommand)}"
+                                            CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu, Mode=FindAncestor}, Path=Tag.DataContext}"
+                                            Header="Delete step" />
                                         <MenuItem
-                                                Command="{Binding Source={x:Reference Name=stepsControl}, Path=DataContext.(viewModels:TaskDetailViewModel.PromoteToTaskCommand)}"
-                                                CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu, Mode=FindAncestor}, Path=Tag.DataContext}"
-                                                Header="Promote to task" />
+                                            Command="{Binding Source={x:Reference Name=stepsControl}, Path=DataContext.(viewModels:TaskDetailViewModel.PromoteToTaskCommand)}"
+                                            CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu, Mode=FindAncestor}, Path=Tag.DataContext}"
+                                            Header="Promote to task" />
                                     </ContextMenu>
                                 </Grid.ContextMenu>
                             </Grid>
@@ -154,16 +163,19 @@
                 </ui:VirtualizingItemsControl>
 
                 <Button
-                        Margin="0,5,0,0"
-                        HorizontalAlignment="Center"
-                        VerticalAlignment="Center"
-                        Command="{Binding AddNewStepCommand}"
-                        Content="Add new Step" />
+                    Margin="0,5,0,0"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    Command="{Binding AddNewStepCommand}"
+                    Content="Add new Step" />
             </StackPanel>
         </Border>
 
         <!--  Remind me and Due Date  -->
-        <Border Margin="0,5,0,5" Background="{ui:ThemeResource ControlFillColorTertiaryBrush}">
+        <Border
+            x:Name="remindMe"
+            Margin="0,5,0,5"
+            Background="{ui:ThemeResource ControlFillColorTertiaryBrush}">
             <StackPanel Orientation="Vertical">
                 <customcontrols:DateTimePicker
                     Padding="5"
@@ -179,7 +191,7 @@
 
                             <TextBlock
                                 Grid.Row="0"
-                                Text="{Binding RelativeSource={RelativeSource AncestorType=customcontrols:DateTimePicker, Mode=FindAncestor}, Path=SelectedDateTime}"
+                                Text="{Binding Task.RemindUser, Mode=TwoWay}"
                                 Visibility="{Binding RelativeSource={RelativeSource AncestorType=customcontrols:DateTimePicker, Mode=FindAncestor}, Path=IsDateTimeExplicitlySet, Converter={converters:BooleanToVisibilityConverter}}" />
                             <TextBlock Grid.Row="1" Text="Remind Me" />
                         </Grid>
@@ -199,7 +211,7 @@
 
                             <TextBlock
                                 Grid.Row="0"
-                                Text="{Binding RelativeSource={RelativeSource AncestorType=customcontrols:DateTimePicker, Mode=FindAncestor}, Path=SelectedDateTime}"
+                                Text="{Binding Task.DueDate, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
                                 Visibility="{Binding RelativeSource={RelativeSource AncestorType=customcontrols:DateTimePicker, Mode=FindAncestor}, Path=IsDateTimeExplicitlySet, Converter={converters:BooleanToVisibilityConverter}}" />
                             <TextBlock Grid.Row="1" Text="Add due date" />
                         </Grid>
@@ -214,6 +226,6 @@
             MinHeight="100"
             Margin="0,5,0,5"
             PlaceholderText="Add Description...."
-            Text="{Binding Task.Description, Mode=TwoWay}"/>
+            Text="{Binding Task.Description, Mode=TwoWay}" />
     </StackPanel>
 </Page>

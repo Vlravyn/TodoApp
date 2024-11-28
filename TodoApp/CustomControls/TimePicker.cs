@@ -5,30 +5,15 @@ using System.Windows.Input;
 
 namespace TodoApp.CustomControls
 {
-    /// <summary>
-    /// The Meridium for the time
-    /// </summary>
-    public enum TimeMeridium
-    {
-        /// <summary>
-        /// Represents Ante Meridium time
-        /// </summary>
-        AM = 1,
-
-        /// <summary>
-        /// Represents Post Meridium time
-        /// </summary>
-        PM = 2
-    }
-
     public class TimePicker : Control
     {
         public event EventHandler TimeChanged;
+        public event EventHandler HourMinunteChanged;
 
-        public static readonly DependencyProperty HourProperty = DependencyProperty.Register(nameof(Hour), typeof(int), typeof(TimePicker), new PropertyMetadata());
-        public static readonly DependencyProperty MinuteProperty = DependencyProperty.Register(nameof(Minute), typeof(int), typeof(TimePicker), new PropertyMetadata());
-        public static readonly DependencyProperty MeridiumProperty = DependencyProperty.Register(nameof(Meridium), typeof(TimeMeridium), typeof(TimePicker), new PropertyMetadata(TimeMeridium.AM));
-        public static readonly DependencyProperty TimeProperty = DependencyProperty.Register(nameof(Time), typeof(TimeSpan), typeof(TimePicker), new PropertyMetadata(new TimeSpan()));
+        public static readonly DependencyProperty HourProperty = DependencyProperty.Register(nameof(Hour), typeof(int), typeof(TimePicker), new PropertyMetadata(HourMinuteChangedCallback));
+        public static readonly DependencyProperty MinuteProperty = DependencyProperty.Register(nameof(Minute), typeof(int), typeof(TimePicker), new PropertyMetadata(HourMinuteChangedCallback));
+        public static readonly DependencyProperty MeridiumProperty = DependencyProperty.Register(nameof(Meridium), typeof(TimeMeridium), typeof(TimePicker), new PropertyMetadata(TimeMeridium.AM, HourMinuteChangedCallback));
+        public static readonly DependencyProperty TimeProperty = DependencyProperty.Register(nameof(Time), typeof(TimeSpan), typeof(TimePicker), new PropertyMetadata(new TimeSpan(), TimeChangedCallback));
         public static readonly DependencyProperty Is24HourFormatProperty = DependencyProperty.Register(nameof(Is24HourFormat), typeof(bool), typeof(TimePicker), new PropertyMetadata(false));
 
         public int Hour
@@ -63,13 +48,10 @@ namespace TodoApp.CustomControls
 
         public TimePicker()
         {
-            
         }
         protected override void OnInitialized(EventArgs e)
         {
             base.OnInitialized(e);
-            Hour = 12;
-            Minute = 0;
 
             if (string.IsNullOrEmpty(DateTimeFormatInfo.CurrentInfo.AMDesignator))
                 Use24HourFormat();
@@ -81,21 +63,60 @@ namespace TodoApp.CustomControls
         }
 
         #region Callbacks
-
-        protected override void OnMouseLeave(MouseEventArgs e)
+        private static void HourMinuteChangedCallback(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            base.OnMouseLeave(e);
-
-            if(Is24HourFormat)
-                Time = new(Hour, Minute, 0);
-            else
+            if(d is TimePicker picker && !picker.isHourMinuteChangingFlag)
             {
-                if (Meridium == TimeMeridium.AM)
-                    Time = new TimeSpan(Hour, Minute, 0);
-                else if(Meridium == TimeMeridium.PM)
-                    Time = new TimeSpan(Hour + 12, Minute, 0);
+                if(picker.Time.Hours != picker.Hour && picker.Time.Hours != picker.Hour + 12 || picker.Time.Minutes != picker.Minute)
+                {
+                    var hour = picker.Hour;
+
+                    if (!picker.Is24HourFormat && picker.Meridium == TimeMeridium.PM)
+                        hour += 12;
+
+                    picker.isTimeChangingFlag = true;
+                    picker.Time = new TimeSpan(hour, picker.Minute, 0);
+                    picker.isTimeChangingFlag = false;
+                }
+                else if(!picker.Is24HourFormat && picker.Meridium == TimeMeridium.PM)
+                {
+                    var hour = picker.Hour;
+                    hour += 12;
+
+                    picker.isTimeChangingFlag = true;
+                    picker.Time = new TimeSpan(hour, picker.Minute, 0);
+                    picker.isTimeChangingFlag = false;
+                }
             }
         }
+        private static void TimeChangedCallback(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            if(d is TimePicker picker && !picker.isTimeChangingFlag)
+            {
+                if (picker.Time == TimeSpan.Zero)
+                    return;
+                if(picker.Time.Hours != picker.Hour && picker.Time.Hours != picker.Hour + 12 || picker.Time.Minutes != picker.Minute)
+                {
+                    var hour = picker.Time.Hours;
+                    if (hour > 12 && !picker.Is24HourFormat)
+                    {
+                        hour -= 12;
+                        picker.Meridium = TimeMeridium.PM;
+                    }
+
+                    picker.isHourMinuteChangingFlag = true;
+                    picker.Hour = hour;
+                    picker.Minute = picker.Time.Minutes;
+                    picker.isHourMinuteChangingFlag = false;
+                }
+
+                picker.TimeChanged?.Invoke(picker, EventArgs.Empty);
+            }
+        }
+
+        bool isTimeChangingFlag = false;
+        bool isHourMinuteChangingFlag = false;
+        
         #endregion Callbacks
     }
 }

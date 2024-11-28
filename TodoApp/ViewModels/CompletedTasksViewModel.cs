@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using MvvmEssentials.Core.Navigation;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using TodoApp.Core.DataModels;
 using TodoApp.Core.Services;
 
@@ -25,25 +26,42 @@ namespace TodoApp.ViewModels
 
         #region Methods
 
-        protected async override void OnChangesSaved(object? sender, SavedChangesEventArgs e)
+        protected override void OnUserTaskUpdated(object? sender, AddingNewEventArgs e)
+        {
+            base.OnUserTaskUpdated(sender, e);
+            if (e.NewObject is UserTask task)
+            {
+                if (CompletedTasks.Contains(task))
+                {
+                    if (task.IsCompleted is false)
+                        CompletedTasks.Remove(task);
+                }
+                else
+                {
+                    if (task.IsCompleted)
+                        CompletedTasks.Add(task);
+                }
+            }
+        }
+        protected override void OnUserTaskDeleted(object? sender, AddingNewEventArgs e)
+        {
+            base.OnUserTaskDeleted(sender, e);
+            if (CompletedTasks.Contains(e.NewObject))
+                CompletedTasks.Remove(((UserTask)e.NewObject));
+        }
+        protected override void OnChangesSaved(object? sender, SavedChangesEventArgs e)
         {
             base.OnChangesSaved(sender, e);
-            await UpdateList();
-        }
-
-        /// <summary>
-        /// Updates the <see cref="CompletedTasks"/>
-        /// </summary>
-        private async Task UpdateList()
-        {
-            CompletedTasks = new ObservableCollection<UserTask>(await userTaskService.GetCompletedUserTasksAsync());
             OnPropertyChanged(nameof(CompletedTasks));
         }
 
         public async void OnNavigatedTo(INavigationParameters parameters)
         {
             if(CompletedTasks is null ||  CompletedTasks.Count == 0)
-                await UpdateList();
+            {
+                CompletedTasks = new ObservableCollection<UserTask>(await _userTaskService.GetCompletedUserTasksAsync());
+                OnPropertyChanged(nameof(CompletedTasks));
+            }
         }
 
         public void OnNavigatedFrom()

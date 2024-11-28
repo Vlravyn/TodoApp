@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Hosting;
 using TodoApp.Core.DataModels;
 
 namespace TodoApp.Core.EntityFramework
@@ -6,7 +7,8 @@ namespace TodoApp.Core.EntityFramework
     public class UserTasksDbContext : DbContext
     {
         public DbSet<UserTask> UserTasks { get; set; }
-
+        public DbSet<TaskList> TaskLists { get; set; }
+        public DbSet<UserTaskListsJoinedTable> UserTaskLists { get; set; }
         public UserTasksDbContext()
         {
         }
@@ -23,6 +25,10 @@ namespace TodoApp.Core.EntityFramework
             modelBuilder.Entity<UserTask>(b =>
             {
                 b.HasKey(t => t.Id);
+                b.HasMany(t => t.TaskLists)
+                 .WithMany(t => t.Tasks)
+                 .UsingEntity<UserTaskListsJoinedTable>();
+
                 b.OwnsMany(t => t.Steps, p =>
                 {
                     p.Property(t => t.Title)
@@ -55,6 +61,26 @@ namespace TodoApp.Core.EntityFramework
                 b.Ignore(t => t.DueDate);
                 b.Ignore(t => t.RemindUser);
                 b.Ignore(t => t.CreatedAt);
+            });
+
+            modelBuilder.Entity<TaskList>(b =>
+            {
+                b.HasKey(t => t.Id);
+                b.Property(t => t.Title)
+                 .IsRequired(true);
+            });
+
+            modelBuilder.Entity<UserTaskListsJoinedTable>(b =>
+            {
+                b.HasKey(p => new { p.UserTaskId, p.TaskListId });
+
+                b.HasOne(p => p.TaskList)
+                 .WithMany(p => p.UserTaskLists)
+                 .HasForeignKey(p => p.TaskListId);
+
+                b.HasOne(p => p.UserTask)
+                 .WithMany(p => p.UserTaskLists)
+                 .HasForeignKey(p => p.UserTaskId);
             });
         }
 

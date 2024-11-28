@@ -1,24 +1,18 @@
-﻿using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
-using MvvmEssentials.Core;
+﻿using MvvmEssentials.Core;
 using MvvmEssentials.Core.Commands;
 using MvvmEssentials.Core.Navigation;
 using MvvmEssentials.Navigation.WPF.Navigation;
-using MvvmEssentials.WPF.Navigation;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
 using TodoApp.Core.DataModels;
 using TodoApp.Core.Services;
 
 namespace TodoApp.ViewModels
 {
-    public class TaskDetailViewModel : ObservableObject, INavigationAware
+    public class TaskDetailViewModel : TaskCollectionViewModelBase, INavigationAware
     {
         #region Private members
 
         private UserTask _userTask;
-
-        private readonly IUserTaskService userTaskService;
-        private readonly INavigationService navigationService;
 
         #endregion Private members
 
@@ -45,20 +39,17 @@ namespace TodoApp.ViewModels
         #region Constructors
 
         public TaskDetailViewModel(IUserTaskService userTaskService, INavigationService navigationService)
+            :base(userTaskService, navigationService)
         {
-            this.userTaskService = userTaskService;
-            this.navigationService = navigationService;
-
-            
-            this.userTaskService.UserTaskDeleted += TaskDeleted;
         }
 
         #endregion Constructors
 
         #region Private Methods
 
-        private void TaskDeleted(object? sender, System.ComponentModel.AddingNewEventArgs e)
+        protected override void OnUserTaskDeleted(object? sender, AddingNewEventArgs e)
         {
+            base.OnUserTaskDeleted(sender, e);
             if (e.NewObject == Task)
             {
                 Task = null;
@@ -78,7 +69,7 @@ namespace TodoApp.ViewModels
                 Title = $"Step {Task.Steps.Count + 1}"
             });
 
-            userTaskService.UpdateAsync(Task);
+            _userTaskService.UpdateAsync(Task);
         }
 
 
@@ -87,8 +78,8 @@ namespace TodoApp.ViewModels
         /// </summary>
         private void Close()
         {
-            userTaskService.SaveChangesAsync();
-            navigationService.Navigate("TaskDetailRegion", ViewType.None, new NavigationParameters());
+            _userTaskService.SaveChangesAsync();
+            _navigationService.Navigate("TaskDetailRegion", ViewType.None, new NavigationParameters());
         }
 
         /// <summary>
@@ -112,7 +103,7 @@ namespace TodoApp.ViewModels
             if (step != null)
                 Task.Steps.Remove(step);
 
-            var result = await userTaskService.UpdateAsync(Task, token);
+            var result = await _userTaskService.UpdateAsync(Task, token);
 
             if (result is false)
                 Task.Steps.Add(step);
@@ -129,7 +120,7 @@ namespace TodoApp.ViewModels
             if (step == null)
                 return;
 
-            await userTaskService.AddAsync(new UserTask()
+            await _userTaskService.AddAsync(new UserTask()
             {
                 IsCompleted = step.IsCompleted,
                 Title = step.Title

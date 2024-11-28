@@ -33,6 +33,10 @@ namespace TodoApp
         /// </summary>
         [NavigateTo(DestinationType = typeof(TaskDetailPage))]
         [EnumMember(Value = "taskDetails")]
-        TaskDetails
+        TaskDetails,
+
+        [NavigateTo(DestinationType = typeof(TaskListPage))]
+        [EnumMember(Value = "taskList")]
+        TaskList
     }
 }

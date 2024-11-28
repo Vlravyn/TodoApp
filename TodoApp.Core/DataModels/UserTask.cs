@@ -1,5 +1,6 @@
 ﻿using MvvmEssentials.Core;
 using System.Collections.ObjectModel;
+using TodoApp.Core.EntityFramework;
 
 namespace TodoApp.Core.DataModels
 {
@@ -58,6 +59,13 @@ namespace TodoApp.Core.DataModels
         }
 
         public ObservableCollection<Step> Steps { get; set; } = new();
+
+        /// <summary>
+        /// The <see cref="TaskList"/> that this user task is part of.
+        /// </summary>
+        public ObservableCollection<TaskList> TaskLists { get; set; } = new();
+
+        internal  List<UserTaskListsJoinedTable> UserTaskLists { get; set; } = new();
 
         /// <summary>
         /// CreatedAt property local time

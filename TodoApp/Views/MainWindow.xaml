@@ -4,6 +4,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:converter="clr-namespace:TodoApp.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:dataModels="clr-namespace:TodoApp.Core.DataModels;assembly=TodoApp.Core"
     xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
     xmlns:local="clr-namespace:TodoApp.Views"
     xmlns:main="clr-namespace:TodoApp"
@@ -24,6 +25,12 @@
     WindowCornerPreference="Round"
     WindowStartupLocation="CenterScreen"
     mc:Ignorable="d">
+    <i:Interaction.Triggers>
+        <i:EventTrigger EventName="Loaded">
+            <i:InvokeCommandAction Command="{Binding OnLoadedCommand}" />
+        </i:EventTrigger>
+    </i:Interaction.Triggers>
+
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="auto" />
@@ -62,8 +69,43 @@
                         Icon="{ui:SymbolIcon Symbol=CheckmarkCircle20,
                                              FontSize=18}"
                         Style="{StaticResource NavigationButtonExpandableButton}" />
+                    <Separator Foreground="White" />
+                    <ItemsControl ItemsSource="{Binding TaskLists}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <VirtualizingStackPanel IsItemsHost="True" Orientation="Vertical" />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate DataType="{x:Type dataModels:TaskList}">
+                                <ui:Button
+                                    Command="{Binding RelativeSource={RelativeSource AncestorType=ItemsControl, Mode=FindAncestor}, Path=DataContext.(viewmodels:MainWindowViewModel.OpenTaskListCommand)}"
+                                    CommandParameter="{Binding}"
+                                    Content="{Binding Title}"
+                                    Icon="{ui:SymbolIcon Symbol=LineHorizontal320}"
+                                    Style="{StaticResource NavigationButtonExpandableButton}">
+                                    <Button.Resources>
+                                        <main:BindingProxy x:Key="host" Data="{Binding RelativeSource={RelativeSource AncestorType=ItemsControl}, Path=DataContext}" />
+                                    </Button.Resources>
+                                    <Button.ContextMenu>
+                                        <ContextMenu>
+                                            <MenuItem
+                                                Command="{Binding Source={StaticResource host}, Path=Data.(viewmodels:MainWindowViewModel.DeleteTaskListCommand)}"
+                                                CommandParameter="{Binding}"
+                                                Header="Delete list" />
+                                        </ContextMenu>
+                                    </Button.ContextMenu>
+                                </ui:Button>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
                 </StackPanel>
 
+                <Border.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Command="{Binding CreateNewTaskListCommand}" Header="Add new list" />
+                    </ContextMenu>
+                </Border.ContextMenu>
             </Border>
 
             <ui:DynamicScrollViewer Grid.Column="1">

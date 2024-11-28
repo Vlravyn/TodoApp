@@ -31,7 +31,6 @@
                         MaxWidth="{TemplateBinding MaxWidth}"
                         MaxHeight="{TemplateBinding MaxHeight}"
                         Margin="{TemplateBinding Margin}"
-                        Padding="{TemplateBinding Padding}"
                         HorizontalAlignment="{TemplateBinding HorizontalAlignment}"
                         VerticalAlignment="{TemplateBinding VerticalAlignment}"
                         Background="{TemplateBinding Background}"
@@ -61,7 +60,7 @@
                                 StaysOpen="False"
                                 VerticalOffset="1">
                                 <StackPanel>
-                                    <Calendar SelectedDate="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Date, Mode=TwoWay}" />
+                                    <Calendar  SelectedDate="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Date, Mode=TwoWay}" />
                                     <customControls:TimePicker Time="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Time, Mode=TwoWay}" />
                                 </StackPanel>
                             </Popup>

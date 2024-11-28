@@ -92,8 +92,10 @@ namespace TodoApp.CustomControls
         {
         }
 
+
         #endregion
 
+        private DateTime oldValue;
         #region Private Methods
 
         private static void IsOpenChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -101,36 +103,49 @@ namespace TodoApp.CustomControls
             if (d is DateTimePicker p)
             {
                 if (p.IsOpen)
+                {
                     p.PickerOpened?.Invoke(p, new RoutedEventArgs());
+                    p.oldValue = p.SelectedDateTime;
+                }
                 else
+                {
                     p.PickerClosed?.Invoke(p, new RoutedEventArgs());
+                }
             }
         }
 
         private static void DateOrTimeChangedCallback(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            if (d is DateTimePicker p && (p.SelectedDateTime.Date != p.Date && p.Time != p.SelectedDateTime.TimeOfDay))
+            if (d is DateTimePicker picker && !picker.isDateOrTimeChangingFlag && (picker.SelectedDateTime.Date != picker.Date || picker.Time != picker.SelectedDateTime.TimeOfDay))
             {
+                picker.isDateTimeChangingFlag = true;
                 if(e.NewValue is DateTime newDate && newDate != DateTime.MinValue)
-                    p.SelectedDateTime = p.Date;
+                    picker.SelectedDateTime = picker.Date;
                 if(e.NewValue is TimeSpan newTime)
-                    p.SelectedDateTime += newTime;
-                p.SelectedDateTimeChanged?.Invoke(p, EventArgs.Empty);
+                    picker.SelectedDateTime += (newTime - picker.SelectedDateTime.TimeOfDay);
+                picker.isDateTimeChangingFlag = true;
+
+                picker.SelectedDateTimeChanged?.Invoke(picker, EventArgs.Empty);
             }
         }
 
         private static void SelectedDateTimeChangedCallback(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            if (d is DateTimePicker p && (p.SelectedDateTime.Date != p.Date && p.Time != p.SelectedDateTime.TimeOfDay))
+            if (d is DateTimePicker picker && !picker.isDateTimeChangingFlag && (picker.SelectedDateTime.Date != picker.Date && picker.Time != picker.SelectedDateTime.TimeOfDay))
             {
-                p.Time = p.SelectedDateTime.TimeOfDay;
-                p.Date = p.SelectedDateTime.Date;
-                p.SelectedDateTimeChanged?.Invoke(p, EventArgs.Empty);
-                if (!p.IsDateTimeExplicitlySet)
-                    p.IsDateTimeExplicitlySet = true;
+                picker.isDateOrTimeChangingFlag = true;
+                picker.Time = picker.SelectedDateTime.TimeOfDay;
+                picker.Date = picker.SelectedDateTime.Date;
+                picker.isDateOrTimeChangingFlag = false;
+
+                picker.SelectedDateTimeChanged?.Invoke(picker, EventArgs.Empty);
+                if (!picker.IsDateTimeExplicitlySet)
+                    picker.IsDateTimeExplicitlySet = true;
             }
         }
 
+        bool isDateOrTimeChangingFlag = false;
+        bool isDateTimeChangingFlag = false;
         #endregion
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
 using System.ComponentModel;
 using TodoApp.Core.DataModels;
 using TodoApp.Core.EntityFramework;
@@ -12,12 +13,15 @@ namespace TodoApp.Core.Services
         public event EventHandler<AddingNewEventArgs> UserTaskAdded;
         public event EventHandler<AddingNewEventArgs> UserTaskDeleted;
         public event EventHandler<AddingNewEventArgs> UserTaskUpdated;
-        public event EventHandler<SavedChangesEventArgs> UserTaskSavedChanges;
+        public event EventHandler<SavedChangesEventArgs> SavedChanges;
+        public event EventHandler<AddingNewEventArgs> TaskListAdded;
+        public event EventHandler<AddingNewEventArgs> TaskListDeleted;
+        public event EventHandler<AddingNewEventArgs> TaskListUpdated;
 
         public UserTaskService(UserTasksDbContext dbContext)
         {
             this.dbContext = dbContext;
-            dbContext.SavedChanges += (_, e) => UserTaskSavedChanges?.Invoke(this, e);
+            dbContext.SavedChanges += (_, e) => SavedChanges?.Invoke(this, e);
         }
 
         /// <summary>
@@ -36,26 +40,62 @@ namespace TodoApp.Core.Services
             return tracked.Entity;
         }
 
+        public async Task<TaskList> AddAsync(TaskList list, CancellationToken token = default)
+        {
+            ArgumentNullException.ThrowIfNull(nameof(list));
+            await dbContext.Database.EnsureCreatedAsync(token);
+            var tracked = await dbContext.TaskLists.AddAsync(list, token);
+            await SaveChangesAsync(token);
+            TaskListAdded?.Invoke(this, new AddingNewEventArgs(tracked.Entity));
+            return tracked.Entity;
+        }
         public async Task<bool> SaveChangesAsync(CancellationToken token)
         {
-            return await dbContext.SaveChangesAsync(token) != 0;
+            var numberOfChangesSaved = await dbContext.SaveChangesAsync(token);
+            var result = numberOfChangesSaved != 0;
+
+            if (result)
+                SavedChanges?.Invoke(this, new SavedChangesEventArgs(true, numberOfChangesSaved));
+            return result;
         }
 
         public async Task<bool> DeleteAsync(UserTask userTask, CancellationToken token = default)
         {
             dbContext.UserTasks.Remove(userTask);
-            await dbContext.SaveChangesAsync(token);
+            var result = await dbContext.SaveChangesAsync(token);
+
+            if (result == 0)
+                return false;
+
             UserTaskDeleted?.Invoke(this, new AddingNewEventArgs(userTask));
+            return true;
+        }
+        public async Task<bool> DeleteAsync(TaskList list, CancellationToken token = default)
+        {
+            dbContext.TaskLists.Remove(list);
+            var result = await dbContext.SaveChangesAsync(token);
+
+            if (result == 0)
+                return false;
+
+            TaskListDeleted?.Invoke(this, new AddingNewEventArgs(list));
             return true;
         }
 
         public async Task<IEnumerable<UserTask>> GetAllUserTasksAsync(CancellationToken token = default)
         {
             await dbContext.Database.EnsureCreatedAsync(token);
-            return await dbContext.UserTasks.AsTracking().ToListAsync(token);
+            return await dbContext.UserTasks.Include(t => t.UserTaskLists).AsTracking().ToListAsync(token);
         }
 
-        public async Task<IEnumerable<UserTask>?> GetByTitleAsync(string title, CancellationToken token = default)
+        public async Task<IEnumerable<TaskList>> GetAllTaskListsAsync(CancellationToken token = default)
+        {
+            await dbContext.Database.EnsureCreatedAsync(token);
+            return await dbContext.TaskLists.Include(t => t.UserTaskLists).AsTracking().ToListAsync(token);
+        }
+
+
+        public async Task<IEnumerable<UserTask>?> GetUserTaskByTitleAsync(string title, CancellationToken token = default)
         {
             return (await GetAllUserTasksAsync(token)).Where(t => t.Title.Contains(title, StringComparison.OrdinalIgnoreCase));
         }
@@ -68,10 +108,18 @@ namespace TodoApp.Core.Services
             UserTaskUpdated?.Invoke(this, new AddingNewEventArgs(userTask));
             return true;
         }
+        public async Task<bool> UpdateAsync(TaskList list, CancellationToken token = default)
+        {
+            await dbContext.Database.EnsureCreatedAsync(token);
+            dbContext.TaskLists.Update(list);
 
+            await SaveChangesAsync(token);
+            TaskListUpdated?.Invoke(this, new AddingNewEventArgs(list));
+            return true;
+        }
         public async Task<IEnumerable<UserTask>> GetCompletedUserTasksAsync(CancellationToken token = default)
         {
-            return await dbContext.UserTasks.Where(t => t.IsCompleted).AsTracking().ToListAsync(token);
+            return await dbContext.UserTasks.Include(t => t.UserTaskLists).Where(t => t.IsCompleted).AsTracking().ToListAsync(token);
         }
     }
 }
